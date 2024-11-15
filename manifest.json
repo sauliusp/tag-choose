@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "BookmarkAiAutoTagger",
+  "version": "1.0.0",
+  "description": "AI-powered bookmark auto-tagging",
+  "permissions": ["tabs", "bookmarks", "storage", "notifications"],
+  "background": {
+    "service_worker": "background/background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "public/icon-48.png"
+  },
+  "icons": {
+    "16": "public/icon-16.png",
+    "48": "public/icon-48.png",
+    "128": "public/icon-128.png"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl + Shift + Y",
+        "mac": "Command + Shift + Y"
+      },
+      "description": "Open the extension popup"
+    }
+  }
+}
