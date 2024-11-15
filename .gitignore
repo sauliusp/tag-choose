@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Production
+dist/
+.parcel-cache/
+
+# Debug logs
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
