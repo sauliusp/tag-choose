@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './popup.css';
+import { useStoreContext } from './StoreContext';
 
 const Popup: React.FC = () => {
+  const { state } = useStoreContext();
+
   const [bookmarks, setBookmarks] = useState<
     chrome.bookmarks.BookmarkTreeNode[]
   >([]);
@@ -17,7 +20,7 @@ const Popup: React.FC = () => {
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">Recent Bookmarks</h1>
       <ul className="space-y-2">
-        <h1>tester</h1>
+        <h1>{state.uiState}</h1>
 
         {bookmarks.map((bookmark) => (
           <li key={bookmark.id} className="border-b pb-2">
