@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import './popup.css';
 import { useStoreContext } from './StoreContext';
+import {
+  Container,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  Link,
+  Paper,
+} from '@mui/material';
+
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+import './popup.css';
 
 const Popup: React.FC = () => {
   const { state } = useStoreContext();
@@ -17,25 +31,33 @@ const Popup: React.FC = () => {
   }, []);
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Recent Bookmarks</h1>
-      <ul className="space-y-2">
-        <h1>{state.uiState}</h1>
-
+    <Container>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Recent Bookmarks
+      </Typography>
+      <Typography variant="h6" component="h2">
+        {state.uiState}
+      </Typography>
+      <List>
         {bookmarks.map((bookmark) => (
-          <li key={bookmark.id} className="border-b pb-2">
-            <a
-              href={bookmark.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800"
-            >
-              {bookmark.title}
-            </a>
-          </li>
+          <ListItem key={bookmark.id} divider>
+            <ListItemText
+              primary={
+                <Link
+                  href={bookmark.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  color="primary"
+                  underline="hover"
+                >
+                  {bookmark.title}
+                </Link>
+              }
+            />
+          </ListItem>
         ))}
-      </ul>
-    </div>
+      </List>
+    </Container>
   );
 };
 

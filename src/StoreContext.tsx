@@ -10,7 +10,6 @@ import { reducer, INITIAL_STATE, Action, State, ComputedProps } from './store';
 export interface StoreContextProps {
   state: State;
   computed: ComputedProps;
-
   dispatch: Dispatch<Action>;
 }
 
