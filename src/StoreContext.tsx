@@ -5,6 +5,7 @@ import React, {
   Dispatch,
   useContext,
 } from 'react';
+
 import { reducer, INITIAL_STATE, Action, State, ComputedProps } from './store';
 
 export interface StoreContextProps {
@@ -19,8 +20,10 @@ const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
   const computed = {
-    get selectedTagIds() {
-      return state.allTagIds.filter((id) => state.tagsById[id].selected);
+    get selectedFoldersIds() {
+      return Object.keys(state.selectedFolderIdsMap).filter(
+        (folderId) => state.selectedFolderIdsMap[folderId],
+      );
     },
   };
 

@@ -1,46 +1,41 @@
+import { Folder } from './types/Folder';
+
 export enum ActionType {
   Reset = 'Reset',
   SetUiState = 'SetUiState',
-  SetTags = 'SetTags',
-  SetTagId = 'SetTagId',
-  ToggleTagSelect = 'ToggleTagSelect',
-  CreateTag = 'CreateTag',
+  SetFolders = 'SetFolders',
+  SetFolderId = 'SetFolderId',
+  ToggleFolderSelect = 'ToggleFolderSelect',
+  CreateFolder = 'CreateFolder',
 }
 
 export type Action =
   | { type: ActionType.Reset }
   | { type: ActionType.SetUiState; payload: UiState }
-  | { type: ActionType.SetTags; payload: Omit<Tag, 'selected'>[] }
-  | { type: ActionType.SetTagId; payload: string | null }
-  | { type: ActionType.ToggleTagSelect; payload: string }
-  | { type: ActionType.CreateTag; payload: Tag };
+  | { type: ActionType.SetFolders; payload: Folder[] }
+  | { type: ActionType.ToggleFolderSelect; payload: Folder['id'] }
+  | { type: ActionType.CreateFolder; payload: Folder };
 
 export enum UiState {
   Upload = 'upload',
 }
 
-export interface Tag {
-  id: string;
-  name: string;
-  selected: boolean;
-}
-
 export interface State {
   uiState: UiState;
-  tagId: string | null;
-  tagsById: Record<string, Tag>;
-  allTagIds: string[];
+  foldersById: Record<Folder['id'], Folder>;
+  selectedFolderIdsMap: Record<Folder['id'], boolean>;
+  allFolderIds: Folder['id'][];
 }
 
 export interface ComputedProps {
-  selectedTagIds: string[];
+  selectedFoldersIds: Folder['id'][];
 }
 
 export const INITIAL_STATE = {
   uiState: UiState.Upload,
-  tagId: null,
-  tagsById: {},
-  allTagIds: [],
+  foldersById: {},
+  selectedFolderIdsMap: {},
+  allFolderIds: [],
 };
 
 export function reducer(state: State, action: Action): State {
@@ -49,35 +44,43 @@ export function reducer(state: State, action: Action): State {
       return INITIAL_STATE;
     case ActionType.SetUiState:
       return { ...state, uiState: action.payload };
-    case ActionType.SetTags: {
-      const tagsById = action.payload.reduce(
-        (result, tag) => ({ ...result, [tag.id]: { ...tag, selected: false } }),
-        {}
-      );
+    case ActionType.SetFolders: {
+      const { foldersById, selectedFolderIdsMap, allFolderIds } =
+        action.payload.reduce(
+          (result, folder) => ({
+            ...result,
+            foldersById: { ...result.foldersById, [folder.id]: folder },
+            selectedFolderIdsMap: {
+              ...result.selectedFolderIdsMap,
+              [folder.id]: false,
+            },
+            allFolderIds: [...result.allFolderIds, folder.id],
+          }),
+          { foldersById: {}, selectedFolderIdsMap: {}, allFolderIds: [] } as {
+            foldersById: State['foldersById'];
+            selectedFolderIdsMap: State['selectedFolderIdsMap'];
+            allFolderIds: State['allFolderIds'];
+          },
+        );
 
-      return { ...state, tagsById, allTagIds: Object.keys(tagsById) };
-    }
-    case ActionType.SetTagId:
-      return { ...state, tagId: action.payload };
-    case ActionType.ToggleTagSelect:
       return {
         ...state,
-        tagsById: {
-          ...state.tagsById,
-          [action.payload]: {
-            ...state.tagsById[action.payload],
-            selected: !state.tagsById[action.payload].selected,
-          },
+        foldersById,
+        selectedFolderIdsMap,
+        allFolderIds,
+      };
+    }
+    case ActionType.ToggleFolderSelect:
+      return {
+        ...state,
+        selectedFolderIdsMap: {
+          ...state.selectedFolderIdsMap,
+          [action.payload]: !state.selectedFolderIdsMap[action.payload],
         },
       };
-    case ActionType.CreateTag:
+    case ActionType.CreateFolder:
       return {
         ...state,
-        tagsById: {
-          ...state.tagsById,
-          [action.payload.id]: { ...action.payload, selected: false },
-        },
-        allTagIds: [...state.allTagIds, action.payload.id],
       };
     default:
       throw new Error('Unknown action');
