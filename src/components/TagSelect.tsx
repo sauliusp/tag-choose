@@ -1,17 +1,10 @@
+/* eslint-disable */
 import React, { useState } from 'react';
 import { TextField, Autocomplete, Chip } from '@mui/material';
 
 export const TagSelect: React.FC = () => {
   const [title, setTitle] = useState('');
   const [tag, setTag] = useState<string | null>(null);
-
-  const handleUpload = () => {
-    // Handle the upload logic here
-    console.log('Title:', title);
-
-    // Her we are logging the tag
-    console.log('Tag:', tag);
-  };
 
   return (
     <Autocomplete
