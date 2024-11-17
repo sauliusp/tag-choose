@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { bookmarkService } from '../services/BookmarkService';
+/* eslint-disable */
+import React, { useState, useEffect } from 'react';
+
 import {
   TextField,
   Button,
@@ -15,8 +16,17 @@ export const UploadForm: React.FC = () => {
   const [tag, setTag] = useState<string | null>(null);
   const tags = ['Tag1', 'Tag2', 'Tag3'];
 
+  useEffect(() => {
+    console.log('Component mounted');
+    // Add any initialization logic here
+
+    return () => {
+      console.log('Component unmounted');
+      // Add any cleanup logic here
+    };
+  }, []);
+
   const handleUpload = () => {
-    // Handle the upload logic here
     console.log('Title:', title);
     console.log('Tag:', tag);
   };
