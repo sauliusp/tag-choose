@@ -1,5 +1,6 @@
 import { Folder } from '../types/Folder';
 import { Bookmark } from '../types/Bookmark';
+import { SavedTab } from '../types/SavedTab';
 
 class BookmarkService {
   private static instance: BookmarkService;
@@ -18,8 +19,10 @@ class BookmarkService {
       const folders: Folder[] = [];
       for (const node of nodes) {
         if (node.children) {
-          folders.push(node);
-          folders.push(...flattenFolders(node.children));
+          const { id, title, children } = node;
+
+          folders.push({ id, title });
+          folders.push(...flattenFolders(children));
         }
       }
       return folders;
@@ -74,9 +77,7 @@ class BookmarkService {
     return createdBookmarks;
   }
 
-  async searchBookmarksByUrl(
-    url: string,
-  ): Promise<{ bookmark: Bookmark | null; folders: Folder[] }> {
+  async searchBookmarksByUrl(url: string): Promise<SavedTab | null> {
     if (!url) {
       throw new Error('URL is required to search bookmarks.');
     }
@@ -84,7 +85,7 @@ class BookmarkService {
     const matchingBookmarks = await chrome.bookmarks.search({ url });
 
     if (matchingBookmarks.length === 0) {
-      return { bookmark: null, folders: [] };
+      return null;
     }
 
     const bookmark = matchingBookmarks[0];
