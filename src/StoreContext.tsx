@@ -25,6 +25,12 @@ const StoreProvider = ({ children }: { children: ReactNode }) => {
         (folderId) => state.selectedFolderIdsMap[folderId],
       );
     },
+    get selectedFolderTitles() {
+      return this.selectedFoldersIds.map((id) => state.foldersById[id].title);
+    },
+    get savedTab() {
+      return state.currentTab.savedTab;
+    },
   };
 
   return (

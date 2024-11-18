@@ -1,5 +1,7 @@
-/* eslint-disable */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { tabPreviewService } from '../services/TabPreviewService';
+import { bookmarkService } from '../services/bookmarkService';
+import { useStoreContext } from '../StoreContext';
 
 import {
   TextField,
@@ -7,29 +9,37 @@ import {
   Container,
   Typography,
   InputAdornment,
-  Chip,
 } from '@mui/material';
 import { TagSelect } from './TagSelect';
+import { ActionType } from '../store';
+import { SavedTab } from '../types/SavedTab';
+import { TabPreview } from '../types/TabPreview';
 
 export const UploadForm: React.FC = () => {
-  const [title, setTitle] = useState('');
-  const [tag, setTag] = useState<string | null>(null);
-  const tags = ['Tag1', 'Tag2', 'Tag3'];
+  const { state, computed, dispatch } = useStoreContext();
+
+  const { currentTab } = state;
 
   useEffect(() => {
-    console.log('Component mounted');
-    // Add any initialization logic here
+    const initialize = async () => {
+      try {
+        const tabPreview: TabPreview =
+          await tabPreviewService.getCurrentTabPreview();
 
-    return () => {
-      console.log('Component unmounted');
-      // Add any cleanup logic here
+        const savedTab: SavedTab | null =
+          await bookmarkService.searchBookmarksByUrl(tabPreview.url);
+
+        dispatch({
+          type: ActionType.SetCurrentTab,
+          payload: { tabPreview, savedTab },
+        });
+      } catch (error) {
+        console.error(error);
+      }
     };
-  }, []);
 
-  const handleUpload = () => {
-    console.log('Title:', title);
-    console.log('Tag:', tag);
-  };
+    initialize();
+  }, []);
 
   return (
     <Container sx={{ py: 3 }}>
@@ -37,26 +47,33 @@ export const UploadForm: React.FC = () => {
         Upload Bookmark
       </Typography>
 
-      <TextField
-        label="Bookmark Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        fullWidth
-        margin="normal"
-        slotProps={{
-          input: {
-            startAdornment: (
-              <InputAdornment position="start">
-                <img
-                  src="https://static.remove.bg/sample-gallery/graphics/bird-thumbnail.jpg"
-                  alt="icon"
-                  style={{ width: 24, height: 24 }}
-                />
-              </InputAdornment>
-            ),
-          },
-        }}
-      />
+      {currentTab && (
+        <TextField
+          label="Bookmark Title"
+          value={currentTab.title}
+          onChange={(e) =>
+            dispatch({
+              type: ActionType.UpdateTabTitle,
+              payload: e.target.value,
+            })
+          }
+          fullWidth
+          margin="normal"
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <img
+                    src={currentTab.preview.faviconUrl}
+                    alt="icon"
+                    style={{ width: 24, height: 24 }}
+                  />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
+      )}
 
       <TagSelect />
 
@@ -64,11 +81,11 @@ export const UploadForm: React.FC = () => {
         variant="contained"
         color="primary"
         size="large"
-        onClick={handleUpload}
+        onClick={() => {}}
         fullWidth
         sx={{ mt: 3 }}
       >
-        Upload Bookmark
+        {computed.savedTab ? 'Update' : 'Upload'} Bookmark
       </Button>
     </Container>
   );

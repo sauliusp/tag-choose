@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TextField, Autocomplete, Chip } from '@mui/material';
 import { useStoreContext } from '../StoreContext';
 import { bookmarkService } from '../services/bookmarkService';
@@ -12,8 +12,6 @@ export const TagSelect: React.FC = () => {
       try {
         const folders = await bookmarkService.getAllFolders();
 
-        console.log(folders);
-
         dispatch({ type: ActionType.SetFolders, payload: folders });
       } catch (error) {
         console.error(error);
@@ -23,20 +21,38 @@ export const TagSelect: React.FC = () => {
     initialize();
   }, []);
 
+  const [value, setValue] = useState<string[]>(
+    () => computed.selectedFoldersIds,
+  );
+
+  useEffect(() => {
+    setValue(computed.selectedFoldersIds);
+  }, [computed.selectedFoldersIds]);
+
   return (
     <Autocomplete
       multiple
       sx={{ mt: 2 }}
-      options={state.allFolderIds.map((id) => state.foldersById[id].title)}
-      defaultValue={computed.selectedFoldersIds.map(
-        (id) => state.foldersById[id].title,
-      )}
+      options={state.allFolderIds}
+      getOptionLabel={(folderId) => state.foldersById[folderId].title}
+      getOptionKey={(folderId) => folderId}
+      value={value}
+      onChange={(_, folderIds) =>
+        dispatch({ type: ActionType.ToggleFolderSelect, payload: folderIds })
+      }
       freeSolo
       renderTags={(value: readonly string[], getTagProps) =>
-        value.map((option: string, index: number) => {
+        value.map((id: string, index: number) => {
+          // eslint-disable-next-line
           const { key, ...tagProps } = getTagProps({ index });
+
           return (
-            <Chip variant="outlined" label={option} key={key} {...tagProps} />
+            <Chip
+              variant="outlined"
+              label={state.foldersById[id].title}
+              key={id}
+              {...tagProps}
+            />
           );
         })
       }
