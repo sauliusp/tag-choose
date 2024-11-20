@@ -22,10 +22,21 @@ export class TabPreviewService {
       throw new Error('Unable to retrieve the current tab data.');
     }
 
+    let faviconUrl = '';
+
+    if (tab.favIconUrl) {
+      faviconUrl = tab.favIconUrl;
+    } else if (tab.url.includes('chrome')) {
+      faviconUrl =
+        'https://www.google.com/chrome/static/images/favicons/favicon-32x32.png';
+    } else {
+      faviconUrl = '';
+    }
+
     return {
       url: tab.url,
       title: tab.title,
-      faviconUrl: tab.favIconUrl || '',
+      faviconUrl,
     };
   }
 }
