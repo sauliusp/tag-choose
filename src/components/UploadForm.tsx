@@ -27,12 +27,19 @@ export const UploadForm: React.FC = () => {
           await tabPreviewService.getCurrentTabPreview();
 
         const savedTab: SavedTab | null =
-          await bookmarkService.searchBookmarksByUrl(tabPreview.url);
+          await bookmarkService.getSavedTabByUrl(tabPreview.url);
 
         dispatch({
           type: ActionType.SetCurrentTab,
           payload: { tabPreview, savedTab },
         });
+
+        if (savedTab) {
+          dispatch({
+            type: ActionType.SelectFolders,
+            payload: savedTab.folders.map((folder) => folder.id),
+          });
+        }
       } catch (error) {
         console.error(error);
       }
@@ -40,6 +47,18 @@ export const UploadForm: React.FC = () => {
 
     initialize();
   }, []);
+
+  const handleSubmit = async () => {
+    try {
+      await bookmarkService.upsertBookmarkInMultipleFolders(
+        computed.selectedFoldersIds,
+        currentTab.title,
+        currentTab.preview.url,
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Container sx={{ py: 3 }}>
@@ -81,7 +100,7 @@ export const UploadForm: React.FC = () => {
         variant="contained"
         color="primary"
         size="large"
-        onClick={() => {}}
+        onClick={handleSubmit}
         fullWidth
         sx={{ mt: 3 }}
       >

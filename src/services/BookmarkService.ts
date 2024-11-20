@@ -52,37 +52,75 @@ class BookmarkService {
     return bookmark;
   }
 
-  async createBookmarkInMultipleFolders(
+  async upsertBookmarkInMultipleFolders(
     folderIds: string[],
     title: string,
     url: string,
-  ): Promise<Bookmark[]> {
-    if (!folderIds || folderIds.length === 0 || !title || !url) {
+  ): Promise<{ updated: number; created: number }> {
+    if (!folderIds || !title || !url) {
       throw new Error(
         'Folder IDs, title, and URL are required to create bookmarks.',
       );
     }
 
-    const createdBookmarks: Bookmark[] = [];
+    const result = {
+      updated: 0,
+      created: 0,
+    };
 
-    for (const folderId of folderIds) {
-      const bookmark = await chrome.bookmarks.create({
+    if (folderIds.length === 0) {
+      folderIds = ['1']; // Default to the "Bookmarks Bar" folder.
+    }
+
+    const folderIdsSet = new Set(folderIds);
+
+    const matchingBookmarks = await this.searchByUrl(url);
+
+    for (const bookmark of matchingBookmarks) {
+      if (!bookmark.parentId) {
+        continue;
+      }
+
+      if (folderIdsSet.has(bookmark.parentId)) {
+        await chrome.bookmarks.update(bookmark.id, { title });
+
+        result.updated += 1;
+
+        folderIdsSet.delete(bookmark.parentId);
+
+        continue;
+      }
+
+      await chrome.bookmarks.remove(bookmark.id);
+    }
+
+    for (const folderId of folderIdsSet) {
+      await chrome.bookmarks.create({
         parentId: folderId,
         title,
         url,
       });
-      createdBookmarks.push(bookmark);
+
+      result.created += 1;
     }
 
-    return createdBookmarks;
+    return result;
   }
 
-  async searchBookmarksByUrl(url: string): Promise<SavedTab | null> {
+  async searchByUrl(url: string): Promise<Bookmark[]> {
     if (!url) {
       throw new Error('URL is required to search bookmarks.');
     }
 
-    const matchingBookmarks = await chrome.bookmarks.search({ url });
+    return await chrome.bookmarks.search({ url });
+  }
+
+  async getSavedTabByUrl(url: string): Promise<SavedTab | null> {
+    if (!url) {
+      throw new Error('URL is required to search bookmarks.');
+    }
+
+    const matchingBookmarks = await this.searchByUrl(url);
 
     if (matchingBookmarks.length === 0) {
       return null;

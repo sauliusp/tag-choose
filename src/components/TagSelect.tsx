@@ -38,7 +38,7 @@ export const TagSelect: React.FC = () => {
       getOptionKey={(folderId) => folderId}
       value={value}
       onChange={(_, folderIds) =>
-        dispatch({ type: ActionType.ToggleFolderSelect, payload: folderIds })
+        dispatch({ type: ActionType.SelectFolders, payload: folderIds })
       }
       freeSolo
       renderTags={(value: readonly string[], getTagProps) =>

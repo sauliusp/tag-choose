@@ -10,7 +10,7 @@ export enum ActionType {
   UpdateTabTitle = 'UpdateTabTitle',
   SetFolders = 'SetFolders',
   SetFolderId = 'SetFolderId',
-  ToggleFolderSelect = 'ToggleFolderSelect',
+  SelectFolders = 'SelectFolders',
   CreateFolder = 'CreateFolder',
 }
 
@@ -23,7 +23,7 @@ export type Action =
     }
   | { type: ActionType.UpdateTabTitle; payload: string }
   | { type: ActionType.SetFolders; payload: Folder[] }
-  | { type: ActionType.ToggleFolderSelect; payload: Folder['id'][] }
+  | { type: ActionType.SelectFolders; payload: Folder['id'][] }
   | { type: ActionType.CreateFolder; payload: Folder };
 
 export enum UiState {
@@ -70,12 +70,6 @@ export function reducer(state: State, action: Action): State {
     case ActionType.SetCurrentTab: {
       const { savedTab, tabPreview } = action.payload;
 
-      const folders = savedTab ? savedTab.folders : [];
-
-      folders.forEach((folder) => {
-        state.selectedFolderIdsMap[folder.id] = true;
-      });
-
       return {
         ...state,
         currentTab: {
@@ -117,10 +111,16 @@ export function reducer(state: State, action: Action): State {
         allFolderIds,
       };
     }
-    case ActionType.ToggleFolderSelect:
+    case ActionType.SelectFolders:
+      state.currentTab.folders = [];
+
       Object.keys(state.selectedFolderIdsMap).forEach((folderId) => {
         state.selectedFolderIdsMap[folderId] =
           action.payload.includes(folderId);
+
+        if (state.selectedFolderIdsMap[folderId]) {
+          state.currentTab.folders.push(state.foldersById[folderId]);
+        }
       });
 
       return state;
