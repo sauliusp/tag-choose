@@ -10,8 +10,9 @@
     "notifications",
     "aiLanguageModelOriginTrial"
   ],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuFa/I8VRTgdEs0Zsp0Q+EoGbuDKxMrV4SKMyZaJSWPlNEW8zMsQuqNyHpicklaqw7pTAXuM+uw2B5eQzGhCWqiD/aeIMn5Ep5dfKxHvi3bayuI8RPpyOAuCe4I4kqTZiZkOzqaxH+j+5mmpfyTqCzJ94DGnfgC75XjL3GJ7zNgboeSag3FodSHrJ/oO05LT4h2WyIyUAPniG5kO+lQLlAvltRbo2u5EA8jPRzJOK7MknEd6dEITuaXUNq94x63P7Rm4gX2YiD8cUmJuBFkRAb4oW0KUFPO3tfnNJ0oA0iFpVPbf3n/kRDVGyGMVwmMV4baJPLI44FD2IWLOh7HW7KwIDAQAB",
   "trial_tokens": [
-    "AqzZYhDP34zR+aVM5MuYEE1MHVUKPZkPwxUle1JVQLZbErGVUPRHeYw+aWt0qKECPFLNvKeC2URvQ+afTwxBUgkAAAB4eyJvcmlnaW4iOiJjaHJvbWUtZXh0ZW5zaW9uOi8vbm9qZmxuaGxkbWpmampkY2RwZGRjZWZjamdoanBlbmwiLCJmZWF0dXJlIjoiQUlQcm9tcHRBUElGb3JFeHRlbnNpb24iLCJleHBpcnkiOjE3NjA0ODYzOTl9"
+    "AkIXcXyHRIS5DZF01hGn7Lm4hVax4HOGHyPr93aN4ad212Oj8tvqL4UUscrTFJdxmw38k0C22nEhhxc/yUBWNwIAAAB4eyJvcmlnaW4iOiJjaHJvbWUtZXh0ZW5zaW9uOi8vb2hqYmhlZmltYW1jaW9nZ2lqamFpYWNwZGJrZ29nZWQiLCJmZWF0dXJlIjoiQUlQcm9tcHRBUElGb3JFeHRlbnNpb24iLCJleHBpcnkiOjE3NjA0ODYzOTl9"
   ],
   "minimum_chrome_version": "131",
   "background": {
