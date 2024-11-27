@@ -23,7 +23,7 @@
     "@eslint/js": "^9.14.0",
     "@parcel/config-default": "^2.11.0",
     "@parcel/transformer-typescript-tsc": "^2.11.0",
-    "@types/chrome": "^0.0.260",
+    "@types/chrome": "^0.0.283",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "eslint": "^9.14.0",

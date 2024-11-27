@@ -42,6 +42,7 @@ export interface ComputedProps {
   selectedFoldersIds: Folder['id'][];
   selectedFolderTitles: Folder['title'][];
   savedTab: SavedTab | null;
+  prompt: string;
 }
 
 export const INITIAL_STATE = {
