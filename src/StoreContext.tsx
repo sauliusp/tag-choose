@@ -31,6 +31,20 @@ const StoreProvider = ({ children }: { children: ReactNode }) => {
     get savedTab() {
       return state.currentTab.savedTab;
     },
+    get prompt() {
+      return `Website URL: ${state.currentTab.preview.url}
+      
+      Website Title: ${state.currentTab.preview.title}
+      
+      I have these folders in my bookmarks bar: 
+      
+      ${Object.values(state.foldersById)
+        .map((folder) => folder.title)
+        .join(', ')}
+        ----------------
+        
+        Please categorize this page into one or more folders. Give me only comma separated folder titles. For example: "Folder1, Folder2"`;
+    },
   };
 
   return (
