@@ -45,15 +45,7 @@ const AiComponent = () => {
       {error && <p>Error: {error}</p>}
       {response && <p>Response: {response}</p>}
       <p>{computed.prompt}</p>
-      <button
-        onClick={() =>
-          handlePrompt(
-            'Shortly describe currently opened web page in my browser?',
-          )
-        }
-      >
-        Run Prompt
-      </button>
+      <button onClick={() => handlePrompt(computed.prompt)}>Run Prompt</button>
     </div>
   );
 };

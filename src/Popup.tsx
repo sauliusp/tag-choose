@@ -3,7 +3,6 @@ import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { UploadForm } from './components/UploadForm';
 import { Container } from '@mui/material';
-import AiComponent from './components/AiComponent';
 
 const Popup: React.FC = () => {
   return (
@@ -11,8 +10,6 @@ const Popup: React.FC = () => {
       <Header />
 
       <UploadForm />
-
-      <AiComponent />
 
       <Footer />
     </Container>
