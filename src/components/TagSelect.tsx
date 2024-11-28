@@ -2,13 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { TextField, Autocomplete, Chip } from '@mui/material';
 import { useStoreContext } from '../StoreContext';
 import { bookmarkService } from '../services/bookmarkService';
+import { aiService } from '../services/AiService';
 import { ActionType } from '../store';
+import { AiModelDefaults } from '../types/AiModelDefaults';
+
+const SYSTEM_PROMPT = `You are an AI assistant who specializes in categorizing bookmarks into folders.`;
 
 export const TagSelect: React.FC = () => {
   const { state, computed, dispatch } = useStoreContext();
 
+  const [aiError, setAiError] = useState<string | null>(null);
+
+  const [aiDefaults, setAiDefaults] = useState<AiModelDefaults | null>(null);
+
   useEffect(() => {
-    const initialize = async () => {
+    const downloadFolders = async () => {
       try {
         const folders = await bookmarkService.getAllFolders();
 
@@ -18,47 +26,91 @@ export const TagSelect: React.FC = () => {
       }
     };
 
-    initialize();
+    const initAi = async () => {
+      try {
+        const defaults = await aiService.initDefaults();
+
+        setAiDefaults(defaults);
+      } catch (err) {
+        setAiError(err.message);
+      }
+    };
+
+    downloadFolders();
+
+    initAi();
   }, []);
 
-  const [value, setValue] = useState<string[]>(
-    () => computed.selectedFoldersIds,
-  );
+  const handlePrompt = async (prompt: string) => {
+    setAiError(null);
 
-  useEffect(() => {
-    setValue(computed.selectedFoldersIds);
-  }, [computed.selectedFoldersIds]);
+    try {
+      if (!aiDefaults) throw new Error('Defaults not loaded');
+
+      const params = {
+        systemPrompt: SYSTEM_PROMPT,
+        temperature: aiDefaults.defaultTemperature,
+        topK: aiDefaults.defaultTopK,
+      };
+      const result = await aiService.runPrompt(prompt, params);
+
+      dispatch({ type: ActionType.SetAiSuggestion, payload: result });
+    } catch (err) {
+      setAiError(err.message);
+    }
+  };
 
   return (
-    <Autocomplete
-      multiple
-      sx={{ mt: 2 }}
-      options={state.allFolderIds}
-      getOptionLabel={(folderId) => state.foldersById[folderId].title}
-      getOptionKey={(folderId) => folderId}
-      value={value}
-      onChange={(_, folderIds) =>
-        dispatch({ type: ActionType.SelectFolders, payload: folderIds })
-      }
-      freeSolo
-      renderTags={(value: readonly string[], getTagProps) =>
-        value.map((id: string, index: number) => {
-          // eslint-disable-next-line
-          const { key, ...tagProps } = getTagProps({ index });
+    <div>
+      <Autocomplete
+        multiple
+        sx={{ mt: 2 }}
+        options={state.allFolderIds}
+        getOptionLabel={(folderId) => state.foldersById[folderId].title}
+        getOptionKey={(folderId) => folderId}
+        value={computed.selectedFolderIds}
+        onChange={(_, folderIds) =>
+          dispatch({ type: ActionType.SelectFolders, payload: folderIds })
+        }
+        renderTags={(value: readonly string[], getTagProps) =>
+          value.map((id: string, index: number) => {
+            // eslint-disable-next-line
+            const { key, onDelete, ...tagProps } = getTagProps({ index });
 
-          return (
-            <Chip
-              variant="outlined"
-              label={state.foldersById[id].title}
-              key={id}
-              {...tagProps}
-            />
-          );
-        })
-      }
-      renderInput={(params) => (
-        <TextField {...params} label="Tags" placeholder="Tags" />
-      )}
-    />
+            return (
+              <Chip
+                variant="outlined"
+                label={state.foldersById[id].title}
+                key={id}
+                onDelete={() => {
+                  dispatch({
+                    type: ActionType.SelectFolders,
+                    payload: computed.selectedFolderIds.filter(
+                      (folderId) => folderId !== id,
+                    ),
+                  });
+                }}
+                {...tagProps}
+              />
+            );
+          })
+        }
+        renderInput={(params) => (
+          <TextField {...params} label="Tags" placeholder="Tags" />
+        )}
+      />
+
+      <div>
+        {aiError && <p>Error: {aiError}</p>}
+        {state.aiResponse && <p>Response: {state.aiResponse}</p>}
+        <br />
+        <br />
+        {computed.prompt && <p>{computed.prompt}</p>}
+
+        <button onClick={() => handlePrompt(computed.prompt)}>
+          Run Prompt
+        </button>
+      </div>
+    </div>
   );
 };

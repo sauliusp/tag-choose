@@ -51,7 +51,7 @@ export const UploadForm: React.FC = () => {
   const handleSubmit = async () => {
     try {
       await bookmarkService.upsertBookmarkInMultipleFolders(
-        computed.selectedFoldersIds,
+        computed.selectedFolderIds,
         currentTab.title,
         currentTab.preview.url,
       );

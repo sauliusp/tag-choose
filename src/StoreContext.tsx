@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 
 import { reducer, INITIAL_STATE, Action, State, ComputedProps } from './store';
+import { Folder } from './types/Folder';
 
 export interface StoreContextProps {
   state: State;
@@ -19,31 +20,21 @@ const StoreContext = createContext<StoreContextProps>({} as StoreContextProps);
 const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
-  const computed = {
-    get selectedFoldersIds() {
-      return Object.keys(state.selectedFolderIdsMap).filter(
-        (folderId) => state.selectedFolderIdsMap[folderId],
-      );
+  const computed: ComputedProps = {
+    get selectedFolderIds(): Folder['id'][] {
+      return [...state.suggestedFolderIds, ...state.selectedFolderIds];
     },
-    get selectedFolderTitles() {
-      return this.selectedFoldersIds.map((id) => state.foldersById[id].title);
+    get folderTitleString(): string {
+      return Object.keys(state.foldersByTitle).join(', ');
     },
-    get savedTab() {
+    get savedTab(): typeof state.currentTab.savedTab {
       return state.currentTab.savedTab;
     },
-    get prompt() {
-      return `Website URL: ${state.currentTab.preview.url}
-      
-      Website Title: ${state.currentTab.preview.title}
-      
-      I have these folders in my bookmarks bar: 
-      
-      ${Object.values(state.foldersById)
-        .map((folder) => folder.title)
-        .join(', ')}
-        ----------------
-        
-        Please categorize this page into one or more folders. Give me only comma separated folder titles. For example: "Folder1, Folder2"`;
+    get prompt(): string {
+      return `<url>${state.currentTab.preview.url}</url>
+  <title>${state.currentTab.preview.title}</title>
+  <folders>${this.folderTitleString}</folders>
+  <instruction>Select appropriate bookmark folders from the provided folder list. Provide only comma-separated folder titles. Example: "FolderTitle1, FolderTitle2"</instruction>`;
     },
   };
 
