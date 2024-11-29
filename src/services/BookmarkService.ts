@@ -29,6 +29,7 @@ class BookmarkService {
     };
 
     const bookmarkTree = await chrome.bookmarks.getTree();
+
     return flattenFolders(bookmarkTree);
   }
 

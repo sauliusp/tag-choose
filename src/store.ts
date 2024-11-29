@@ -42,7 +42,6 @@ export interface ComputedProps {
   prompt: string;
   savedTab: SavedTab | null;
   folderTitleString: string;
-  selectedFolderIds: Folder['id'][];
 }
 
 export const INITIAL_STATE: State = {
@@ -123,7 +122,6 @@ export function reducer(state: State, action: Action): State {
     case ActionType.SelectFolders:
       return {
         ...state,
-        suggestedFolderIds: [],
         selectedFolderIds: action.payload,
       };
     case ActionType.SetAiSuggestion: {
@@ -146,6 +144,11 @@ export function reducer(state: State, action: Action): State {
         ...state,
         aiResponse,
         suggestedFolderIds,
+        selectedFolderIds: [
+          ...Array.from(
+            new Set([...suggestedFolderIds, ...state.selectedFolderIds]),
+          ),
+        ],
       };
     }
     default:
