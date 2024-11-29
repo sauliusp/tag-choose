@@ -123,6 +123,7 @@ export function reducer(state: State, action: Action): State {
     case ActionType.SelectFolders:
       return {
         ...state,
+        suggestedFolderIds: [],
         selectedFolderIds: action.payload,
       };
     case ActionType.SetAiSuggestion: {

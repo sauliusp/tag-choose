@@ -31,10 +31,17 @@ const StoreProvider = ({ children }: { children: ReactNode }) => {
       return state.currentTab.savedTab;
     },
     get prompt(): string {
-      return `<url>${state.currentTab.preview.url}</url>
-  <title>${state.currentTab.preview.title}</title>
-  <folders>${this.folderTitleString}</folders>
-  <instruction>Select appropriate bookmark folders from the provided folder list. Provide only comma-separated folder titles. Example: "FolderTitle1, FolderTitle2"</instruction>`;
+      return `
+<url>${state.currentTab.preview.url}</url>
+<title>${state.currentTab.preview.title}</title>
+<folders>${this.folderTitleString}</folders>
+<instruction>
+  Select the most appropriate folder for the bookmark from the list. 
+  Preferably choose one folder, but if the content strongly fits multiple, return up to three folders. 
+  Output a comma-separated list of folder titles (e.g., "Folder1" or "Folder1, Folder2"). 
+  Minimize the number of folders whenever possible. If no folder is suitable, return an empty string.
+</instruction>
+    `.trim();
     },
   };
 

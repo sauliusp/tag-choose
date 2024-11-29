@@ -1,10 +1,11 @@
 import { PromptConfig } from '../types/PromptConfig';
 
+const SYSTEM_PROMPT = `You are a highly intelligent and efficient assistant designed to categorize and organize bookmarks into appropriate folders.`;
+
 class AiService {
   private static instance: AiService;
 
-  // @ts-expect-error: still waiting for the @chrome/types to be updated
-  private session = null;
+  private session: typeof chrome.aiOriginTrial.session = null;
 
   private constructor() {}
 
@@ -17,11 +18,14 @@ class AiService {
 
   public async runPrompt(
     prompt: string,
-    params: PromptConfig,
+    params: Partial<PromptConfig>,
   ): Promise<string> {
     try {
       if (!this.session) {
-        this.session = await chrome.aiOriginTrial.languageModel.create(params);
+        this.session = await chrome.aiOriginTrial.languageModel.create({
+          systemPrompt: SYSTEM_PROMPT,
+          ...params,
+        });
       }
 
       return this.session.prompt(prompt);

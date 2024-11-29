@@ -6,12 +6,10 @@ import { aiService } from '../services/AiService';
 import { ActionType } from '../store';
 import { AiModelDefaults } from '../types/AiModelDefaults';
 
-const SYSTEM_PROMPT = `You are an AI assistant who specializes in categorizing bookmarks into folders.`;
-
 export const TagSelect: React.FC = () => {
   const { state, computed, dispatch } = useStoreContext();
 
-  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiError, setAiError] = useState('');
 
   const [aiDefaults, setAiDefaults] = useState<AiModelDefaults | null>(null);
 
@@ -42,13 +40,12 @@ export const TagSelect: React.FC = () => {
   }, []);
 
   const handlePrompt = async (prompt: string) => {
-    setAiError(null);
+    setAiError('');
 
     try {
       if (!aiDefaults) throw new Error('Defaults not loaded');
 
       const params = {
-        systemPrompt: SYSTEM_PROMPT,
         temperature: aiDefaults.defaultTemperature,
         topK: aiDefaults.defaultTopK,
       };
