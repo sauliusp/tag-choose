@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 
 import { reducer, INITIAL_STATE, Action, State, ComputedProps } from './store';
-import { Folder } from './types/Folder';
 
 export interface StoreContextProps {
   state: State;
@@ -21,9 +20,6 @@ const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
   const computed: ComputedProps = {
-    get selectedFolderIds(): Folder['id'][] {
-      return [...state.suggestedFolderIds, ...state.selectedFolderIds];
-    },
     get folderTitleString(): string {
       return Object.keys(state.foldersByTitle).join(', ');
     },

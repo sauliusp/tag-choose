@@ -1,15 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, Autocomplete, Chip } from '@mui/material';
+import {
+  TextField,
+  Autocomplete,
+  Chip,
+  LinearProgress,
+  Paper,
+  Fab,
+  Box,
+} from '@mui/material';
 import { useStoreContext } from '../StoreContext';
 import { bookmarkService } from '../services/bookmarkService';
 import { aiService } from '../services/AiService';
 import { ActionType } from '../store';
 import { AiModelDefaults } from '../types/AiModelDefaults';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import { Folder } from '../types/Folder';
 
 export const TagSelect: React.FC = () => {
   const { state, computed, dispatch } = useStoreContext();
 
-  const [aiError, setAiError] = useState('');
+  const [error, setError] = useState('');
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [aiDefaults, setAiDefaults] = useState<AiModelDefaults | null>(null);
 
@@ -30,7 +42,7 @@ export const TagSelect: React.FC = () => {
 
         setAiDefaults(defaults);
       } catch (err) {
-        setAiError(err.message);
+        setError(err.message);
       }
     };
 
@@ -40,7 +52,8 @@ export const TagSelect: React.FC = () => {
   }, []);
 
   const handlePrompt = async (prompt: string) => {
-    setAiError('');
+    setError('');
+    setIsLoading(true);
 
     try {
       if (!aiDefaults) throw new Error('Defaults not loaded');
@@ -53,19 +66,34 @@ export const TagSelect: React.FC = () => {
 
       dispatch({ type: ActionType.SetAiSuggestion, payload: result });
     } catch (err) {
-      setAiError(err.message);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  const handleTagDelete = (folderId: Folder['id']) => {
+    dispatch({
+      type: ActionType.SelectFolders,
+      payload: state.selectedFolderIds.filter((id) => id !== folderId),
+    });
+  };
+
+  const getTagIcon = (folderId: Folder['id']) =>
+    state.suggestedFolderIds.includes(folderId) ? (
+      <AutoAwesomeIcon color="primary" />
+    ) : undefined;
 
   return (
     <div>
       <Autocomplete
         multiple
+        disabled={isLoading}
         sx={{ mt: 2 }}
         options={state.allFolderIds}
         getOptionLabel={(folderId) => state.foldersById[folderId].title}
         getOptionKey={(folderId) => folderId}
-        value={computed.selectedFolderIds}
+        value={state.selectedFolderIds}
         onChange={(_, folderIds) =>
           dispatch({ type: ActionType.SelectFolders, payload: folderIds })
         }
@@ -76,38 +104,48 @@ export const TagSelect: React.FC = () => {
 
             return (
               <Chip
+                icon={getTagIcon(id)}
                 variant="outlined"
                 label={state.foldersById[id].title}
                 key={id}
-                onDelete={() => {
-                  dispatch({
-                    type: ActionType.SelectFolders,
-                    payload: computed.selectedFolderIds.filter(
-                      (folderId) => folderId !== id,
-                    ),
-                  });
-                }}
+                onDelete={() => handleTagDelete(id)}
                 {...tagProps}
               />
             );
           })
         }
         renderInput={(params) => (
-          <TextField {...params} label="Tags" placeholder="Tags" />
+          <Paper
+            elevation={0}
+            sx={{
+              display: 'flex',
+            }}
+          >
+            <Box sx={{ flexGrow: 1 }}>
+              <TextField
+                {...params}
+                error={!!error}
+                helperText={error}
+                label="Bookmark Folders"
+                placeholder="Bookmark Folders"
+              />
+
+              {isLoading && <LinearProgress />}
+            </Box>
+
+            <Fab
+              color="primary"
+              aria-label="suggest folders"
+              size="small"
+              disabled={isLoading}
+              sx={{ flexShrink: 0, ml: '12px', mt: '9px' }}
+              onClick={() => handlePrompt(computed.prompt)}
+            >
+              <AutoAwesomeIcon />
+            </Fab>
+          </Paper>
         )}
       />
-
-      <div>
-        {aiError && <p>Error: {aiError}</p>}
-        {state.aiResponse && <p>Response: {state.aiResponse}</p>}
-        <br />
-        <br />
-        {computed.prompt && <p>{computed.prompt}</p>}
-
-        <button onClick={() => handlePrompt(computed.prompt)}>
-          Run Prompt
-        </button>
-      </div>
     </div>
   );
 };
