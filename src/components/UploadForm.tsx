@@ -9,6 +9,7 @@ import {
   Container,
   Typography,
   InputAdornment,
+  Alert,
 } from '@mui/material';
 import { TagSelect } from './TagSelect';
 import { ActionType } from '../store';
@@ -60,11 +61,25 @@ export const UploadForm: React.FC = () => {
     }
   };
 
+  const isTabSaved = computed.savedTab !== null;
+
+  const actionText = `${isTabSaved ? 'Update' : 'Save'} Bookmark`;
+
   return (
     <Container sx={{ py: 3 }}>
+      {isTabSaved && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          This page is already bookmarked. You can update its title or folders.
+        </Alert>
+      )}
+
       <Typography variant="subtitle1" gutterBottom>
-        Upload Bookmark
+        {actionText}
       </Typography>
+
+      <Alert severity="warning">
+        Due to some tech stuff AI feature will be disabled
+      </Alert>
 
       {currentTab && (
         <TextField
@@ -104,7 +119,7 @@ export const UploadForm: React.FC = () => {
         fullWidth
         sx={{ mt: 3 }}
       >
-        {computed.savedTab ? 'Update' : 'Upload'} Bookmark
+        {actionText}
       </Button>
     </Container>
   );
