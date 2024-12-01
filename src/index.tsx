@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { StoreProvider } from './StoreContext';
+import { StoreProvider } from './store/StoreContext';
 import Popup from './Popup';
 
 import '@fontsource/roboto/300.css';

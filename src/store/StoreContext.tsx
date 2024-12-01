@@ -6,7 +6,7 @@ import React, {
   useContext,
 } from 'react';
 
-import { reducer, INITIAL_STATE, Action, State, ComputedProps } from './store';
+import { reducer, INITIAL_STATE, Action, State, ComputedProps } from './Store';
 
 export interface StoreContextProps {
   state: State;

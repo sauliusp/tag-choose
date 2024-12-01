@@ -8,10 +8,10 @@ import {
   Fab,
   Box,
 } from '@mui/material';
-import { useStoreContext } from '../StoreContext';
+import { useStoreContext } from '../store/StoreContext';
 import { bookmarkService } from '../services/bookmarkService';
 import { aiService } from '../services/AiService';
-import { ActionType } from '../store';
+import { ActionType } from '../store/Store';
 import { AiModelDefaults } from '../types/AiModelDefaults';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { Folder } from '../types/Folder';
