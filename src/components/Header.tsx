@@ -9,7 +9,7 @@ export const Header: React.FC = () => {
           sx={{ display: 'flex', gap: 2, justifyContent: 'end', flexGrow: 1 }}
         >
           <Link
-            href="https://example.com/link2"
+            href="https://github.com/sauliusp/TagChoose/blob/main/PRODUCT_SPEC.md"
             target="_blank"
             color="inherit"
             underline="none"
@@ -17,12 +17,12 @@ export const Header: React.FC = () => {
             About the Project
           </Link>
           <Link
-            href="https://example.com/link3"
+            href="https://github.com/sauliusp/TagChoose/blob/main/README.md"
             target="_blank"
             color="inherit"
             underline="none"
           >
-            Give Feedback
+            Technical Details
           </Link>
         </Box>
       </Toolbar>

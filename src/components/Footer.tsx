@@ -14,7 +14,7 @@ export const Footer: React.FC = () => {
           }}
         >
           <Typography variant="body1" align="center">
-            © {new Date().getFullYear()} Bookmark AI Tagger
+            © {new Date().getFullYear()} TagChoose
           </Typography>
         </Box>
       </Toolbar>
