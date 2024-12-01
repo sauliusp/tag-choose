@@ -1,7 +1,7 @@
-import { CurrentTab } from './types/CurrentTab';
-import { Folder } from './types/Folder';
-import { SavedTab } from './types/SavedTab';
-import { TabPreview } from './types/TabPreview';
+import { CurrentTab } from '../types/CurrentTab';
+import { Folder } from '../types/Folder';
+import { SavedTab } from '../types/SavedTab';
+import { TabPreview } from '../types/TabPreview';
 
 export enum ActionType {
   SelectFolders = 'SelectFolders',
@@ -136,19 +136,25 @@ export function reducer(state: State, action: Action): State {
       }
 
       const folderTitles = aiResponse.split(',').map((title) => title.trim());
-      const suggestedFolderIds = folderTitles
-        .filter((title) => state.foldersByTitle[title])
-        .map((title) => state.foldersByTitle[title].id);
+
+      const suggestedFolderIds = Array.from(
+        new Set([
+          ...state.suggestedFolderIds,
+          ...folderTitles
+            .filter((title) => state.foldersByTitle[title])
+            .map((title) => state.foldersByTitle[title].id),
+        ]),
+      );
+
+      const selectedFolderIds = Array.from(
+        new Set([...suggestedFolderIds, ...state.selectedFolderIds]),
+      );
 
       return {
         ...state,
         aiResponse,
         suggestedFolderIds,
-        selectedFolderIds: [
-          ...Array.from(
-            new Set([...suggestedFolderIds, ...state.selectedFolderIds]),
-          ),
-        ],
+        selectedFolderIds,
       };
     }
     default:

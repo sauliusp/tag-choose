@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { tabPreviewService } from '../services/TabPreviewService';
 import { bookmarkService } from '../services/bookmarkService';
-import { useStoreContext } from '../StoreContext';
+import { useStoreContext } from '../store/StoreContext';
 
 import {
   TextField,
@@ -12,7 +12,7 @@ import {
   Alert,
 } from '@mui/material';
 import { TagSelect } from './TagSelect';
-import { ActionType } from '../store';
+import { ActionType } from '../store/Store';
 import { SavedTab } from '../types/SavedTab';
 import { TabPreview } from '../types/TabPreview';
 
