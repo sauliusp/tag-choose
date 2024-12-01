@@ -1,7 +1,36 @@
 {
-  "name": "bookmark-ai-autotagger",
-  "version": "1.0.0",
-  "description": "AI-powered bookmark auto-tagging Chrome extension",
+  "name": "TagChoose",
+  "version": "0.1.0",
+  "description": "AI-powered bookmark categorization",
+  "author": {
+    "name": "Saulius Petreikis",
+    "email": "sauliuspetr@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sauliusp/TagChoose.git"
+  },
+  "keywords": [
+    "chrome-extension",
+    "bookmarks",
+    "AI",
+    "categorization",
+    "bookmark-organizer",
+    "auto-tagging",
+    "productivity",
+    "folder-sync",
+    "bookmark-management",
+    "google-prompt-api",
+    "ai-powered",
+    "multi-folder",
+    "quick-access"
+  ],
+  "homepage": "https://github.com/sauliusp/TagChoose#readme",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sauliusp/TagChoose/issues",
+    "email": "sauliuspetr@gmail.com"
+  },
   "scripts": {
     "dev": "parcel watch src/background/background.ts src/index.tsx --no-cache --no-hmr",
     "build": "parcel build src/background/background.ts src/index.tsx --no-cache && npm run copy",

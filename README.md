@@ -29,7 +29,7 @@ For detailed information, see the [Product Specification](PRODUCT_SPEC.md).
 1. **Clone the Repository**:
 
    ```bash
-   git clone https://github.com/sauliusp/tag-choose
+   git clone https://github.com/sauliusp/TagChoose.git
    cd tagchoose
    ```
 
@@ -162,5 +162,5 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 
 ## **Contact**
 
-- For bug reports and feature requests, please [open an issue](https://github.com/sauliusp/tag-choose/issues).
-- For general inquiries, contact **sauliusthedev@gmail.com**.
+- For bug reports and feature requests, please [open an issue](https://github.com/sauliusp/TagChoose/issues).
+- For general inquiries, contact **sauliuspetr@gmail.com**.
