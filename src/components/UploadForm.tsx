@@ -69,17 +69,20 @@ export const UploadForm: React.FC = () => {
     <Container sx={{ py: 3 }}>
       {isTabSaved && (
         <Alert severity="info" sx={{ mb: 2 }}>
-          This page is already bookmarked. You can update its title or folders.
+          This page is already bookmarked. You can modify its title or update
+          the associated folders.
         </Alert>
       )}
+
+      <Alert severity="warning" sx={{ mb: 2 }}>
+        Your browser supports AI features, but they’re currently unavailable,
+        possibly due to limited disk space. You can still tag this bookmark
+        using autocomplete.
+      </Alert>
 
       <Typography variant="subtitle1" gutterBottom>
         {actionText}
       </Typography>
-
-      <Alert severity="warning">
-        Due to some tech stuff AI feature will be disabled
-      </Alert>
 
       {currentTab && (
         <TextField
