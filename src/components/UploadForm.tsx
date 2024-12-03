@@ -15,45 +15,53 @@ import { ActionType } from '../store/Store';
 import { SavedTab } from '../types/SavedTab';
 import { TabPreview } from '../types/TabPreview';
 import { aiService } from '../services/AiService';
-import { AlertContainer } from './AlertContainer';
+import { AlertsContainer } from './AlertsContainer';
 
 export const UploadForm: React.FC = () => {
   const { state, computed, dispatch } = useStoreContext();
 
   const { currentTab } = state;
 
-  useEffect(() => {
-    const handleCurrentTab = async () => {
-      try {
-        const tabPreview: TabPreview =
-          await tabPreviewService.getCurrentTabPreview();
+  const getCurrentTab = async () => {
+    try {
+      const tabPreview: TabPreview =
+        await tabPreviewService.getCurrentTabPreview();
 
-        const savedTab: SavedTab | null =
-          await bookmarkService.getSavedTabByUrl(tabPreview.url);
+      const savedTab: SavedTab | null = await bookmarkService.getSavedTabByUrl(
+        tabPreview.url,
+      );
 
+      dispatch({
+        type: ActionType.SetCurrentTab,
+        payload: { tabPreview, savedTab },
+      });
+
+      if (savedTab) {
         dispatch({
-          type: ActionType.SetCurrentTab,
-          payload: { tabPreview, savedTab },
+          type: ActionType.SelectFolders,
+          payload: savedTab.folders.map((folder) => folder.id),
         });
-
-        if (savedTab) {
-          dispatch({
-            type: ActionType.SelectFolders,
-            payload: savedTab.folders.map((folder) => folder.id),
-          });
-        }
-      } catch (error) {
-        console.error(error);
       }
-    };
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-    const getAiCapabilities = async () => {
-      const capabilities = await aiService.getAiCapabilities();
+  const getAiCapabilities = async () => {
+    const capabilities = await aiService.getAiCapabilities();
 
-      dispatch({ type: ActionType.SetAiCapabilities, payload: capabilities });
-    };
+    if (
+      capabilities !== 'unsupported' &&
+      capabilities.available === 'after-download'
+    ) {
+      aiService.initSession();
+    }
 
-    handleCurrentTab();
+    dispatch({ type: ActionType.SetAiCapabilities, payload: capabilities });
+  };
+
+  useEffect(() => {
+    getCurrentTab();
 
     getAiCapabilities();
   }, []);
@@ -76,7 +84,7 @@ export const UploadForm: React.FC = () => {
 
   return (
     <Container sx={{ py: 3 }}>
-      <AlertContainer />
+      <AlertsContainer />
 
       <Typography variant="subtitle1" gutterBottom>
         {actionText}

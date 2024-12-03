@@ -3,7 +3,7 @@ const SYSTEM_PROMPT = `You are a highly intelligent and efficient assistant desi
 class AiService {
   private static instance: AiService;
 
-  private session: typeof chrome.aiOriginTrial.session = null;
+  private session: AILanguageModel | null = null;
 
   private constructor() {}
 
@@ -21,25 +21,26 @@ class AiService {
       return 'unsupported';
     }
 
-    return await chrome.aiOriginTrial.languageModel.capabilities();
+    return await self.ai.languageModel.capabilities();
   }
 
-  async runPrompt(
-    prompt: string,
-    config: {
-      temperature: number;
-      topK: number;
-    },
-  ): Promise<string> {
+  async initSession(): Promise<void> {
     try {
-      if (!this.session) {
-        this.session = await chrome.aiOriginTrial.languageModel.create({
-          systemPrompt: SYSTEM_PROMPT,
-          ...config,
-        });
+      this.session = await self.ai.languageModel.create({
+        systemPrompt: SYSTEM_PROMPT,
+      });
+    } catch {
+      throw new Error('Failed to initialize the AI session.');
+    }
+  }
+
+  async runPrompt(prompt: string): Promise<string> {
+    try {
+      if (this.session === null) {
+        await this.initSession();
       }
 
-      return this.session.prompt(prompt);
+      return this.session!.prompt(prompt);
     } catch (e) {
       console.error('Prompt failed', e);
 
