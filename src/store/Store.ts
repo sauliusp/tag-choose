@@ -42,13 +42,6 @@ export interface State {
   uiState: UiState;
 }
 
-export interface ComputedProps {
-  aiReady: boolean;
-  prompt: string;
-  savedTab: SavedTab | null;
-  folderTitleString: string;
-}
-
 export const INITIAL_STATE: State = {
   aiCapabilities: null,
   aiResponse: null,
