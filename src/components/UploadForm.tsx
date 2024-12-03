@@ -9,12 +9,13 @@ import {
   Container,
   Typography,
   InputAdornment,
-  Alert,
 } from '@mui/material';
 import { TagSelect } from './TagSelect';
 import { ActionType } from '../store/Store';
 import { SavedTab } from '../types/SavedTab';
 import { TabPreview } from '../types/TabPreview';
+import { aiService } from '../services/AiService';
+import { AlertContainer } from './AlertContainer';
 
 export const UploadForm: React.FC = () => {
   const { state, computed, dispatch } = useStoreContext();
@@ -22,7 +23,7 @@ export const UploadForm: React.FC = () => {
   const { currentTab } = state;
 
   useEffect(() => {
-    const initialize = async () => {
+    const handleCurrentTab = async () => {
       try {
         const tabPreview: TabPreview =
           await tabPreviewService.getCurrentTabPreview();
@@ -46,7 +47,15 @@ export const UploadForm: React.FC = () => {
       }
     };
 
-    initialize();
+    const getAiCapabilities = async () => {
+      const capabilities = await aiService.getAiCapabilities();
+
+      dispatch({ type: ActionType.SetAiCapabilities, payload: capabilities });
+    };
+
+    handleCurrentTab();
+
+    getAiCapabilities();
   }, []);
 
   const handleSubmit = async () => {
@@ -67,23 +76,11 @@ export const UploadForm: React.FC = () => {
 
   return (
     <Container sx={{ py: 3 }}>
-      {isTabSaved && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          This page is already bookmarked. You can modify its title or update
-          the associated folders.
-        </Alert>
-      )}
-
-      <Alert severity="warning" sx={{ mb: 2 }}>
-        Your browser supports AI features, but they’re currently unavailable,
-        possibly due to limited disk space. You can still tag this bookmark
-        using autocomplete.
-      </Alert>
+      <AlertContainer />
 
       <Typography variant="subtitle1" gutterBottom>
         {actionText}
       </Typography>
-
       {currentTab && (
         <TextField
           label="Bookmark Title"
@@ -111,9 +108,7 @@ export const UploadForm: React.FC = () => {
           }}
         />
       )}
-
       <TagSelect />
-
       <Button
         variant="contained"
         color="primary"

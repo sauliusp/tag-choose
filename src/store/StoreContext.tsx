@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 
 import { reducer, INITIAL_STATE, Action, State, ComputedProps } from './Store';
+import { CurrentTab } from '../types/CurrentTab';
 
 export interface StoreContextProps {
   state: State;
@@ -20,10 +21,20 @@ const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
   const computed: ComputedProps = {
+    get aiReady(): boolean {
+      if (
+        state.aiCapabilities === null ||
+        state.aiCapabilities === 'unsupported'
+      ) {
+        return false;
+      }
+
+      return state.aiCapabilities.available === 'readily';
+    },
     get folderTitleString(): string {
       return Object.keys(state.foldersByTitle).join(', ');
     },
-    get savedTab(): typeof state.currentTab.savedTab {
+    get savedTab(): CurrentTab['savedTab'] {
       return state.currentTab.savedTab;
     },
     get prompt(): string {
