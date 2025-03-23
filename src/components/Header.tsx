@@ -1,6 +1,22 @@
 import React from 'react';
 import { Link, Box, Toolbar, AppBar } from '@mui/material';
 import logo from '../../public/logo.svg';
+import { URLs } from '../parameters';
+
+const links = [
+  {
+    label: 'Technical Details',
+    href: URLs.technicalDetails,
+  },
+  {
+    label: 'About the Project',
+    href: URLs.website,
+  },
+  {
+    label: 'Privacy Policy',
+    href: URLs.privacyPolicy,
+  },
+];
 
 export const Header: React.FC = () => {
   return (
@@ -9,7 +25,7 @@ export const Header: React.FC = () => {
         <Box
           sx={{
             display: 'flex',
-            gap: 1,
+            gap: 2,
             justifyContent: 'end',
             flexGrow: 1,
             alignItems: 'center',
@@ -30,24 +46,19 @@ export const Header: React.FC = () => {
             />
           </Link>
 
-          <Link
-            href="https://github.com/sauliusp/TagChoose/blob/main/PRODUCT_SPEC.md"
-            target="_blank"
-            underline="none"
-            aria-label="About the Project"
-            sx={{ color: 'text.secondary' }}
-          >
-            About the Project
-          </Link>
-          <Link
-            href="https://github.com/sauliusp/TagChoose/blob/main/README.md"
-            target="_blank"
-            underline="none"
-            aria-label="Technical Details"
-            sx={{ color: 'text.secondary' }}
-          >
-            Technical Details
-          </Link>
+          {links.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              underline="none"
+              aria-label={link.label}
+              sx={{ color: 'text.secondary' }}
+            >
+              {link.label}
+            </Link>
+          ))}
         </Box>
       </Toolbar>
     </AppBar>

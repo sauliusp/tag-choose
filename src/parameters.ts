@@ -2,8 +2,9 @@ export const URLs = {
   website: 'https://tagchoose.site',
   about: 'https://tagchoose.site/about',
   technicalDetails: 'https://tagchoose.site/technical-details',
-  buyMeACoffee: '',
-  suggestFeature: '',
-  review: '',
-  keyboardShortcuts: 'chrome://extensions/shortcuts',
+  buyMeACoffee: 'https://buymeacoffee.com/saulius.developer',
+  suggestFeature: 'https://tagchoose.featurebase.app/',
+  review:
+    'https://chromewebstore.google.com/detail/tagchoose/hlfgdfpeekcelanebbfchnnneijhophh/reviews',
+  privacyPolicy: 'https://tagchoose.site/privacy-policy',
 };
