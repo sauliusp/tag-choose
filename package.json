@@ -37,6 +37,7 @@
     "copy": "cp -r public dist && cp manifest.json dist && cp popup.html dist && cp reset.css dist",
     "lint": "eslint",
     "fix": "eslint --fix",
+    "zip": "rm -rf dist.zip && node scripts/remove-key.js && zip -r dist.zip dist",
     "prepare": "husky"
   },
   "dependencies": {
