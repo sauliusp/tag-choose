@@ -5,12 +5,12 @@ import { URLs } from '../parameters';
 
 const links = [
   {
-    label: 'Technical Details',
-    href: URLs.technicalDetails,
+    label: 'Project Website',
+    href: URLs.website,
   },
   {
-    label: 'About the Project',
-    href: URLs.website,
+    label: 'Technical Requirements',
+    href: URLs.technicalDetails,
   },
   {
     label: 'Privacy Policy',
