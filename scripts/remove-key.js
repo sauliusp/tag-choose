@@ -1,12 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+/* eslint-disable */
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const fs = require('fs');
 const manifestPath = 'dist/manifest.json';
-const manifest = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '..', manifestPath)),
-);
-
+const manifest = require('../' + manifestPath);
 delete manifest.key;
 fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
