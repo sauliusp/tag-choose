@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "#TagChoose",
+  "name": "#TagChoose - AI Bookmark Manager with offline Gemini Nano LLM in your browser",
   "version": "0.9.0",
   "description": "#TagChoose categorizes your bookmarks with offline AI using Gemini Nano LLM within your browser via experimental PROMPT API",
   "permissions": ["bookmarks", "storage", "aiLanguageModelOriginTrial"],
