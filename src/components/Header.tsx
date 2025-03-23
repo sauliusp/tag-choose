@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link, Box, Toolbar, AppBar, Typography } from '@mui/material';
+import { Link, Box, Toolbar, AppBar } from '@mui/material';
+import logo from '../../public/logo.svg';
 
 export const Header: React.FC = () => {
   return (
@@ -14,20 +15,27 @@ export const Header: React.FC = () => {
             alignItems: 'center',
           }}
         >
-          <Typography
-            variant="h6"
-            color="primary"
+          <Link
             sx={{ mr: 'auto' }}
-            role="logo"
+            href="https://tagchoose.site"
+            target="_blank"
+            underline="none"
+            aria-label="TagChoose Website"
           >
-            #TagChoose
-          </Typography>
+            <img
+              src={logo}
+              width={150}
+              title="TagChoose Logo"
+              alt="TagChoose Logo"
+            />
+          </Link>
 
           <Link
             href="https://github.com/sauliusp/TagChoose/blob/main/PRODUCT_SPEC.md"
             target="_blank"
             underline="none"
             aria-label="About the Project"
+            sx={{ color: 'text.secondary' }}
           >
             About the Project
           </Link>
@@ -36,6 +44,7 @@ export const Header: React.FC = () => {
             target="_blank"
             underline="none"
             aria-label="Technical Details"
+            sx={{ color: 'text.secondary' }}
           >
             Technical Details
           </Link>
