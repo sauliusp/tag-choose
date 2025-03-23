@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "#TagChoose - AI Bookmark Manager with client-side Gemini Nano LLM",
   "version": "0.9.0",
-  "description": "#TagChoose categorizes your bookmarks with client-side AI using Gemini Nano LLM within your browser via experimental PROMPT API",
+  "description": "#TagChoose categorizes your bookmarks with client-side AI using Gemini Nano LLM within your browser. No backend needed. Privacy focused.",
   "permissions": ["bookmarks", "storage", "aiLanguageModelOriginTrial", "tabs"],
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuFa/I8VRTgdEs0Zsp0Q+EoGbuDKxMrV4SKMyZaJSWPlNEW8zMsQuqNyHpicklaqw7pTAXuM+uw2B5eQzGhCWqiD/aeIMn5Ep5dfKxHvi3bayuI8RPpyOAuCe4I4kqTZiZkOzqaxH+j+5mmpfyTqCzJ94DGnfgC75XjL3GJ7zNgboeSag3FodSHrJ/oO05LT4h2WyIyUAPniG5kO+lQLlAvltRbo2u5EA8jPRzJOK7MknEd6dEITuaXUNq94x63P7Rm4gX2YiD8cUmJuBFkRAb4oW0KUFPO3tfnNJ0oA0iFpVPbf3n/kRDVGyGMVwmMV4baJPLI44FD2IWLOh7HW7KwIDAQAB",
   "trial_tokens": [
