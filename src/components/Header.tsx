@@ -4,18 +4,26 @@ import logo from '../../public/logo.svg';
 import { URLs } from '../parameters';
 
 const links = [
+  // {
+  //   label: 'Project Website',
+  //   href: URLs.website,
+  // },
   {
-    label: 'Project Website',
-    href: URLs.website,
+    label: 'About Extension',
+    href: URLs.about,
   },
   {
-    label: 'Technical Requirements',
-    href: URLs.technicalDetails,
+    label: 'Suggest a Feature',
+    href: URLs.suggestFeature,
   },
-  {
-    label: 'Privacy Policy',
-    href: URLs.privacyPolicy,
-  },
+  // {
+  //   label: 'Technical Requirements',
+  //   href: URLs.technicalDetails,
+  // },
+  // {
+  //   label: 'Privacy Policy',
+  //   href: URLs.privacyPolicy,
+  // },
 ];
 
 export const Header: React.FC = () => {
