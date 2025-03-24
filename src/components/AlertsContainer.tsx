@@ -1,6 +1,7 @@
 import React from 'react';
 import { useStoreContext } from '../store/StoreContext';
 import { Alert, Link } from '@mui/material';
+import { URLs } from '../parameters';
 
 export const AlertsContainer: React.FC = () => {
   const { computed, state } = useStoreContext();
@@ -24,7 +25,7 @@ export const AlertsContainer: React.FC = () => {
           role="alert"
           aria-live="polite"
         >
-          This page is already bookmarked, but you can update its title or
+          This website is already bookmarked, but you can update its title or
           modify the associated folders.
         </Alert>
       )}
@@ -40,10 +41,11 @@ export const AlertsContainer: React.FC = () => {
           unavailable. You can still tag this bookmark using autocomplete. Visit
           the product&apos;s{' '}
           <Link
-            href="https://github.com/sauliusp/TagChoose/blob/main/README.md#installation"
+            href={URLs.technicalDetails}
             target="_blank"
             underline="none"
-            aria-label="Technical Details"
+            rel="noopener noreferrer"
+            aria-label="Technical Details Page"
           >
             Technical Details
           </Link>{' '}
