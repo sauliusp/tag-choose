@@ -1,1 +1,5 @@
-export type AiCapabilities = AILanguageModelCapabilities | 'unsupported';
+export type AiCapabilities =
+  | AILanguageModelCapabilities
+  | 'unsupported'
+  | 'available'
+  | 'unavailable';

@@ -12,6 +12,10 @@ const links = [
     label: 'About Extension',
     href: URLs.about,
   },
+  // {
+  //   label: 'About Extension',
+  //   href: URLs.about,
+  // },
   {
     label: 'Suggest a Feature',
     href: URLs.suggestFeature,

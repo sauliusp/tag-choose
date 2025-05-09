@@ -113,9 +113,9 @@ export const TagSelect: React.FC = () => {
                 {...params}
                 error={!!error}
                 helperText={error}
-                label="Bookmark Folders"
-                placeholder="Bookmark Folders"
-                aria-label="Bookmark Folders"
+                label="Bookmark Tags | 1 Tag = 1 Folder"
+                placeholder="Bookmark Tags | 1 Tag = 1 Folder"
+                aria-label="Bookmark Tags | 1 Tag = 1 Folder"
               />
 
               {isLoading && <LinearProgress aria-label="Loading" />}

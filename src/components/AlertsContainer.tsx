@@ -6,13 +6,14 @@ import { URLs } from '../parameters';
 export const AlertsContainer: React.FC = () => {
   const { computed, state } = useStoreContext();
 
-  const aiCapabilitiesReady =
-    state.aiCapabilities !== null && state.aiCapabilities !== 'unsupported';
+  const aiCapabilitiesReady = computed.aiReady;
 
   const showSavedTabAlert = computed.savedTab !== null;
   const showAiWarning =
     aiCapabilitiesReady && state.aiCapabilities.available === 'no';
-  const showAiError = state.aiCapabilities === 'unsupported';
+  const showAiError = ['unsupported', 'unavailable'].includes(
+    state.aiCapabilities as string,
+  );
   const showDownloadWarning =
     aiCapabilitiesReady && state.aiCapabilities.available === 'after-download';
 

@@ -31,11 +31,27 @@ const StoreProvider = ({ children }: { children: ReactNode }) => {
 
   const computed: ComputedProps = {
     get aiReady(): boolean {
-      return (
-        state.aiCapabilities !== null &&
-        state.aiCapabilities !== 'unsupported' &&
-        state.aiCapabilities.available === 'readily'
-      );
+      if (state.aiCapabilities === null) {
+        return false;
+      }
+
+      if (state.aiCapabilities === 'unsupported') {
+        return false;
+      }
+
+      if (state.aiCapabilities === 'unavailable') {
+        return false;
+      }
+
+      if (state.aiCapabilities === 'available') {
+        return true;
+      }
+
+      if (state.aiCapabilities.available === 'readily') {
+        return true;
+      }
+
+      return false;
     },
     get folderListString(): string {
       return Object.keys(state.foldersByTitle).join(', ');
