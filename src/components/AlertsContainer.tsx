@@ -19,6 +19,10 @@ export const AlertsContainer: React.FC = () => {
 
   return (
     <>
+      <Alert severity="info" sx={{ mb: 2 }} role="alert" aria-live="polite">
+        For the best experience, please ensure your browser is up to date.
+      </Alert>
+
       {showSavedTabAlert && (
         <Alert
           severity="success"
