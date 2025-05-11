@@ -9,8 +9,12 @@ const links = [
   //   href: URLs.website,
   // },
   {
-    label: 'About Extension',
-    href: URLs.about,
+    label: "Doesn't work?",
+    href: URLs.technicalDetails,
+  },
+  {
+    label: 'Project Website',
+    href: URLs.website,
   },
   // {
   //   label: 'About Extension',

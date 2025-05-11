@@ -1,3 +1,4 @@
+import { AiCapabilities } from '../types/AiCapabilities';
 import { PromptPayload } from '../types/PromptPayload';
 
 const SYSTEM_PROMPT = `You are a highly intelligent and efficient assistant designed to categorize and organize bookmarks into appropriate folders.`;
@@ -16,9 +17,7 @@ class AiService {
     return AiService.instance;
   }
 
-  async getAiCapabilities(): Promise<
-    AILanguageModelCapabilities | 'unsupported'
-  > {
+  async getAiCapabilities(): Promise<AiCapabilities> {
     if (!('aiOriginTrial' in chrome)) {
       return 'unsupported';
     }

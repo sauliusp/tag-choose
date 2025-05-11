@@ -43,7 +43,11 @@ const StoreProvider = ({ children }: { children: ReactNode }) => {
         return false;
       }
 
-      if (state.aiCapabilities === 'available') {
+      if (
+        ['available', 'downloadable', 'downloading'].includes(
+          state.aiCapabilities as string,
+        )
+      ) {
         return true;
       }
 

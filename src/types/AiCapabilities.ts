@@ -2,4 +2,6 @@ export type AiCapabilities =
   | AILanguageModelCapabilities
   | 'unsupported'
   | 'available'
-  | 'unavailable';
+  | 'unavailable'
+  | 'downloading'
+  | 'downloadable';

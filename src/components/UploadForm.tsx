@@ -65,6 +65,10 @@ export const UploadForm: React.FC = () => {
       aiService.initSession();
     }
 
+    if (capabilities === 'downloadable') {
+      aiService.initSession();
+    }
+
     dispatch({ type: ActionType.SetAiCapabilities, payload: capabilities });
   };
 

@@ -15,14 +15,13 @@ export const AlertsContainer: React.FC = () => {
     state.aiCapabilities as string,
   );
   const showDownloadWarning =
-    aiCapabilitiesReady && state.aiCapabilities.available === 'after-download';
+    aiCapabilitiesReady &&
+    (state.aiCapabilities.available === 'after-download' ||
+      state.aiCapabilities === 'downloadable' ||
+      state.aiCapabilities === 'downloading');
 
   return (
     <>
-      <Alert severity="info" sx={{ mb: 2 }} role="alert" aria-live="polite">
-        For the best experience, please ensure your browser is up to date.
-      </Alert>
-
       {showSavedTabAlert && (
         <Alert
           severity="success"
