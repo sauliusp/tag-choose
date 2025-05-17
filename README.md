@@ -1,5 +1,9 @@
 # **TagChoose** - AI-Powered Bookmark Categorizer
 
+TagChoose Website: https://tagchoose.site
+
+TagChoose Chrome Extension: https://chromewebstore.google.com/detail/tagchoose-bookmark-manage/hlfgdfpeekcelanebbfchnnneijhophh
+
 _TagChoose_ is a Chrome extension that leverages the [Prompt API in Extensions](https://developer.chrome.com/docs/extensions/ai/prompt-api) to intelligently suggest and organize bookmarks into relevant folders.
 
 For detailed information, see the [Product Specification](PRODUCT_SPEC.md).
