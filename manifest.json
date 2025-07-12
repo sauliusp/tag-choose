@@ -1,14 +1,11 @@
 {
   "manifest_version": 3,
   "name": "#TagChoose - Bookmark Manager with client-side AI",
-  "version": "0.9.2",
+  "version": "1.0.0",
   "description": "#TagChoose categorizes your bookmarks with client-side AI using Gemini Nano LLM within your browser.",
-  "permissions": ["bookmarks", "aiLanguageModelOriginTrial", "tabs"],
+  "permissions": ["bookmarks", "tabs"],
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxdRZwDqnFlEWGiI4Ojcqy6oRD2iqSL3P8xVIbd078Y7T3VtvUN6KELL6M06Mw3vYWJVPyr81ZuW/D1v5fP6aAD5QZczhgVzRii5mgMQEPHKjfGiOYeoV3iFqexVjZ3XYCNzbg4YH4fpy07ndELocvwyWeHxmNbkpVFRdJXMYmKYw0ztmIwyRaVfCdnQdOubvuQZTCZ0hJJuevlEXQghAV3M8ql8MK4Rqw0ujEMz/gyOhcFKiCpiNrE9LmCHbQtp9VtaSJUbpPC8nLsK7BHscx9YaWZk4U8srag3a9UlALGKuc2KcY4C6VTzfYzIkZoD+fBUsrCH8+ovL1hAnuzmbLQIDAQAB",
-  "trial_tokens": [
-    "Aupufuq9lg14yILPxltrNxQkLvldYqdq6arQ333wnu/tNAapSpYJd16h+n+ui8SQE2ynazLS0kQYY1vYoiOIagYAAAB4eyJvcmlnaW4iOiJjaHJvbWUtZXh0ZW5zaW9uOi8vaGxmZ2RmcGVla2NlbGFuZWJiZmNobm5uZWlqaG9waGgiLCJmZWF0dXJlIjoiQUlQcm9tcHRBUElGb3JFeHRlbnNpb24iLCJleHBpcnkiOjE3NjA0ODYzOTl9"
-  ],
-  "minimum_chrome_version": "131",
+  "minimum_chrome_version": "138",
   "background": {
     "service_worker": "background/background.js"
   },

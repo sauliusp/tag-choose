@@ -30,6 +30,7 @@ export const UploadForm: React.FC = () => {
 
   const [submitComplete, setSubmitComplete] = React.useState(false);
 
+  // This function remains the same.
   const getCurrentTab = async () => {
     try {
       const tabPreview: TabPreview =
@@ -58,23 +59,11 @@ export const UploadForm: React.FC = () => {
   const getAiCapabilities = async () => {
     const capabilities = await aiService.getAiCapabilities();
 
-    if (
-      capabilities !== 'unsupported' &&
-      capabilities.available === 'after-download'
-    ) {
-      aiService.initSession();
-    }
-
-    if (capabilities === 'downloadable') {
-      aiService.initSession();
-    }
-
     dispatch({ type: ActionType.SetAiCapabilities, payload: capabilities });
   };
 
   useEffect(() => {
     getCurrentTab();
-
     getAiCapabilities();
   }, []);
 
@@ -132,7 +121,6 @@ export const UploadForm: React.FC = () => {
       <Typography variant="subtitle1" gutterBottom>
         {ctaText}
       </Typography>
-
       {currentTab && (
         <TextField
           label="Bookmark Title"
@@ -160,7 +148,6 @@ export const UploadForm: React.FC = () => {
         />
       )}
       <TagSelect aria-label="Tag Selection" />
-
       <Button
         variant="contained"
         color={ctaButtonConfig.color}

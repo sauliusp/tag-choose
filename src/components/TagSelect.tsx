@@ -40,10 +40,6 @@ export const TagSelect: React.FC = () => {
   }, []);
 
   const handlePrompt = async (promptPayload: PromptPayload) => {
-    if (!state.aiCapabilities || state.aiCapabilities === 'unsupported') {
-      throw new Error('AI capabilities are not supported.');
-    }
-
     setError('');
     setIsLoading(true);
 

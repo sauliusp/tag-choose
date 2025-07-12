@@ -1,4 +1,3 @@
-import { AiCapabilities } from '../types/AiCapabilities';
 import { CurrentTab } from '../types/CurrentTab';
 import { Folder } from '../types/Folder';
 import { SavedTab } from '../types/SavedTab';
@@ -16,7 +15,7 @@ export enum ActionType {
 
 export type Action =
   | { type: ActionType.SelectFolders; payload: Folder['id'][] }
-  | { type: ActionType.SetAiCapabilities; payload: AiCapabilities }
+  | { type: ActionType.SetAiCapabilities; payload: Availability }
   | { type: ActionType.SetAiSuggestion; payload: string }
   | {
       type: ActionType.SetCurrentTab;
@@ -31,7 +30,7 @@ export enum UiState {
 }
 
 export interface State {
-  aiCapabilities: AiCapabilities | null;
+  aiCapabilities: Availability | null;
   aiResponse: string | null;
   allFolderIds: Folder['id'][];
   currentTab: CurrentTab;

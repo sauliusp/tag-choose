@@ -31,31 +31,7 @@ const StoreProvider = ({ children }: { children: ReactNode }) => {
 
   const computed: ComputedProps = {
     get aiReady(): boolean {
-      if (state.aiCapabilities === null) {
-        return false;
-      }
-
-      if (state.aiCapabilities === 'unsupported') {
-        return false;
-      }
-
-      if (state.aiCapabilities === 'unavailable') {
-        return false;
-      }
-
-      if (
-        ['available', 'downloadable', 'downloading'].includes(
-          state.aiCapabilities as string,
-        )
-      ) {
-        return true;
-      }
-
-      if (state.aiCapabilities.available === 'readily') {
-        return true;
-      }
-
-      return false;
+      return state.aiCapabilities === 'available';
     },
     get folderListString(): string {
       return Object.keys(state.foldersByTitle).join(', ');

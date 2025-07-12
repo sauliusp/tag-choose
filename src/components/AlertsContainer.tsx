@@ -4,21 +4,15 @@ import { Alert, Link } from '@mui/material';
 import { URLs } from '../parameters';
 
 export const AlertsContainer: React.FC = () => {
-  const { computed, state } = useStoreContext();
-
-  const aiCapabilitiesReady = computed.aiReady;
+  const { state, computed } = useStoreContext();
 
   const showSavedTabAlert = computed.savedTab !== null;
-  const showAiWarning =
-    aiCapabilitiesReady && state.aiCapabilities.available === 'no';
-  const showAiError = ['unsupported', 'unavailable'].includes(
-    state.aiCapabilities as string,
-  );
-  const showDownloadWarning =
-    aiCapabilitiesReady &&
-    (state.aiCapabilities.available === 'after-download' ||
-      state.aiCapabilities === 'downloadable' ||
-      state.aiCapabilities === 'downloading');
+
+  const showDownloadAlert =
+    state.aiCapabilities === 'downloadable' ||
+    state.aiCapabilities === 'downloading';
+
+  const showUnavailableAlert = state.aiCapabilities === 'unavailable';
 
   return (
     <>
@@ -33,17 +27,17 @@ export const AlertsContainer: React.FC = () => {
           modify the associated folders.
         </Alert>
       )}
-
-      {showAiWarning && (
+      {/* Renders when the model is not supported or unavailable on the device. */}
+      {showUnavailableAlert && (
         <Alert
-          severity="warning"
+          severity="warning" // Changed to warning to be less alarming than error.
           sx={{ mb: 2 }}
           role="alert"
           aria-live="assertive"
         >
-          AI features are supported in your browser but are currently
-          unavailable. You can still tag this bookmark using autocomplete. Visit
-          the product&apos;s{' '}
+          AI features are not available on this browser or device. You can still
+          tag this bookmark manually using autocomplete. For more info, visit
+          the{' '}
           <Link
             href={URLs.technicalDetails}
             target="_blank"
@@ -53,13 +47,13 @@ export const AlertsContainer: React.FC = () => {
           >
             Technical Details
           </Link>{' '}
-          page for more information and troubleshooting steps.
+          page.
         </Alert>
       )}
-
-      {showDownloadWarning && (
+      {/* Renders ONLY while the model is downloading. */}
+      {showDownloadAlert && (
         <Alert
-          severity="warning"
+          severity="info" // Changed to info as this is a transient, expected state.
           sx={{ mb: 2 }}
           role="alert"
           aria-live="assertive"
@@ -67,18 +61,6 @@ export const AlertsContainer: React.FC = () => {
           The AI model is being downloaded... This may take some time, but you
           can still tag this bookmark manually using autocomplete in the
           meantime.
-        </Alert>
-      )}
-
-      {showAiError && (
-        <Alert
-          severity="error"
-          sx={{ mb: 2 }}
-          role="alert"
-          aria-live="assertive"
-        >
-          AI features are not supported in your browser. However, you can still
-          tag this bookmark manually using autocomplete.
         </Alert>
       )}
     </>

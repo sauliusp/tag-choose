@@ -1,6 +1,6 @@
 {
   "name": "#TagChoose",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "#TagChoose categorizes your bookmarks with offline AI using Gemini Nano LLM within your browser via experimental PROMPT API",
   "author": {
     "name": "Saulius Petreikis",
@@ -53,8 +53,8 @@
     "@eslint/js": "^9.14.0",
     "@parcel/config-default": "^2.11.0",
     "@parcel/transformer-typescript-tsc": "^2.11.0",
-    "@types/chrome": "^0.0.287",
-    "@types/dom-chromium-ai": "^0.0.4",
+    "@types/chrome": "^0.0.332",
+    "@types/dom-chromium-ai": "^0.0.9",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "buffer": "^6.0.3",

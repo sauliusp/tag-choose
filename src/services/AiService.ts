@@ -1,12 +1,8 @@
-import { AiCapabilities } from '../types/AiCapabilities';
 import { PromptPayload } from '../types/PromptPayload';
-
-const SYSTEM_PROMPT = `You are a highly intelligent and efficient assistant designed to categorize and organize bookmarks into appropriate folders.`;
 
 class AiService {
   private static instance: AiService;
-
-  private session: AILanguageModel | null = null;
+  private session: LanguageModel | null = null;
 
   private constructor() {}
 
@@ -17,60 +13,58 @@ class AiService {
     return AiService.instance;
   }
 
-  async getAiCapabilities(): Promise<AiCapabilities> {
-    if (!('aiOriginTrial' in chrome)) {
-      return 'unsupported';
-    }
-
-    return await chrome.aiOriginTrial.languageModel.availability();
+  async getAiCapabilities(): Promise<Availability> {
+    return await LanguageModel.availability();
   }
 
-  async initSession(): Promise<void> {
+  async getSession(
+    onDownloadProgress?: (progress: number) => void,
+  ): Promise<LanguageModel> {
     try {
-      this.session = await LanguageModel.create({
-        systemPrompt: SYSTEM_PROMPT,
+      return await LanguageModel.create({
+        monitor(m) {
+          m.addEventListener('downloadprogress', (e) => {
+            console.log(`Downloaded ${e.loaded * 100}%`);
+            onDownloadProgress?.(e.loaded * 100);
+          });
+        },
+        initialPrompts: [
+          {
+            role: 'system',
+            content: `You are an assistant designed to categorize and organize bookmarks into appropriate folders.You will be given a website url, title and available bookmark folders. You will have to choose one or more folders which most fit the provided website url and title from the provided folder list. Output a comma-separated list of folder titles (e.g., "Folder1" or "Folder1, Folder2")`,
+          },
+          {
+            role: 'user',
+            content: `Website URL: "https://www.example.com/blog/typescript-best-practices", title: "TypeScript Best Practices for 2024 - A Complete Guide", available folders: "Work, Programming, TypeScript, Web Development, Learning, Documentation, Tools, Frontend, Backend, JavaScript, React, Angular, Vue, Node.js, Testing, Performance, Security, Architecture, Design Patterns, Clean Code"`,
+          },
+          {
+            role: 'assistant',
+            content: 'Programming, TypeScript',
+          },
+        ],
       });
-    } catch {
-      throw new Error('Failed to initialize the AI session.');
+    } catch (error) {
+      console.error('Failed to create language model session:', error);
+      throw new Error('Failed to initialize AI capabilities');
     }
-  }
-
-  getPrompt(payload: PromptPayload): string {
-    const { url, title, folderListString } = payload;
-
-    return `
-<reference>
-  Website URL: ${url}, title: ${title}, available folders: ${folderListString}
-</reference>
-<instruction>
-  Select the most appropriate folder for the bookmark from the list. 
-  Preferably choose one folder, but if the content strongly fits multiple, return up to three folders. 
-  Output a comma-separated list of folder titles (e.g., "Folder1" or "Folder1, Folder2"). 
-</instruction>
-    `.trim();
   }
 
   async runPrompt(payload: PromptPayload): Promise<string> {
     try {
-      if (this.session === null) {
-        await this.initSession();
+      if (!this.session) {
+        this.session = await this.getSession();
       }
 
-      return this.session!.prompt(this.getPrompt(payload));
+      const { url, title, folderListString } = payload;
+
+      return await this.session.prompt(
+        `Website URL: ${url}, title: ${title}, available folders: ${folderListString}`,
+      );
     } catch (e) {
       console.error('Prompt failed', e);
-
-      await this.reset();
+      // No need to call reset() anymore as there is no persistent session.
       throw new Error('Failed to run the prompt.');
     }
-  }
-
-  async reset(): Promise<void> {
-    if (this.session) {
-      this.session.destroy();
-    }
-
-    this.session = null;
   }
 }
 
