@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   TextField,
   Autocomplete,
@@ -7,7 +7,9 @@ import {
   Paper,
   Fab,
   Box,
-  Tooltip,
+  Popover,
+  Typography,
+  Link,
 } from '@mui/material';
 import { useStoreContext } from '../store/StoreContext';
 import { bookmarkService } from '../services/bookmarkService';
@@ -16,9 +18,11 @@ import { ActionType } from '../store/Store';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { Folder } from '../types/Folder';
 import { PromptPayload } from '../types/PromptPayload';
+import { URLs } from '../parameters';
 
 export const TagSelect: React.FC = () => {
   const { state, computed, dispatch } = useStoreContext();
+  const aiButtonRef = useRef<HTMLButtonElement>(null);
 
   const [error, setError] = useState('');
 
@@ -127,23 +131,44 @@ export const TagSelect: React.FC = () => {
               {isLoading && <LinearProgress aria-label="Loading" />}
             </Box>
 
-            <Tooltip
+            <Popover
               open={!!showDownloadPopover}
-              title={`Downloading AI model (~4GB)... ${computed.aiDownloadPercentage} complete`}
-              placement="top"
-              arrow
+              anchorEl={aiButtonRef.current}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
             >
-              <Fab
-                color="primary"
-                aria-label="Suggest folders"
-                size="small"
-                disabled={!aiButtonEnabled}
-                sx={{ flexShrink: 0, ml: '12px', mt: '9px' }}
-                onClick={() => handlePrompt(computed.promptPayload)}
-              >
-                <AutoAwesomeIcon />
-              </Fab>
-            </Tooltip>
+              <Box sx={{ p: 2, maxWidth: 300 }}>
+                <Typography variant="body2">
+                  Downloading AI model (~4GB)... {computed.aiDownloadPercentage}% complete
+                </Typography>
+                <Link
+                  href={URLs.aiInitialDownload}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ mt: 1, display: 'block' }}
+                >
+                  Read more about AI models
+                </Link>
+              </Box>
+            </Popover>
+
+            <Fab
+              ref={aiButtonRef}
+              color="primary"
+              aria-label="Suggest folders"
+              size="small"
+              disabled={!aiButtonEnabled}
+              sx={{ flexShrink: 0, ml: '12px', mt: '9px' }}
+              onClick={() => handlePrompt(computed.promptPayload)}
+            >
+              <AutoAwesomeIcon />
+            </Fab>
           </Paper>
         )}
       />

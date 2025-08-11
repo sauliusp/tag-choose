@@ -4,11 +4,11 @@ import { Alert, Link } from '@mui/material';
 import { URLs } from '../parameters';
 
 export const AlertsContainer: React.FC = () => {
-  const { state, computed } = useStoreContext();
+  const { computed } = useStoreContext();
 
   const showSavedTabAlert = computed.savedTab !== null;
 
-  const showUnavailableAlert = state.aiCapabilities === 'unavailable';
+  const showUnavailableAlert = !computed.aiReady;
 
   return (
     <>
@@ -32,18 +32,19 @@ export const AlertsContainer: React.FC = () => {
           aria-live="assertive"
         >
           AI features are not available on this browser or device. You can still
-          tag this bookmark manually using autocomplete. For more info, visit
-          the{' '}
+          tag this bookmark manually using autocomplete. For more info, please
+          read{' '}
           <Link
-            href={URLs.technicalDetails}
+            href={URLs.aiNotAvailable}
+            sx={{ textDecoration: 'underline', color: 'inherit' }}
             target="_blank"
             underline="none"
             rel="noopener noreferrer"
             aria-label="Technical Details Page"
           >
-            Technical Details
-          </Link>{' '}
-          page.
+            this article
+          </Link>
+          .
         </Alert>
       )}
     </>
