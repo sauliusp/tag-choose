@@ -1,5 +1,7 @@
 import { PromptPayload } from '../types/PromptPayload';
 
+export type DownloadProgressCallback = (progress: number) => void;
+
 class AiService {
   private static instance: AiService;
   private session: LanguageModel | null = null;
@@ -18,14 +20,13 @@ class AiService {
   }
 
   async getSession(
-    onDownloadProgress?: (progress: number) => void,
+    onDownloadProgress?: DownloadProgressCallback,
   ): Promise<LanguageModel> {
     try {
       return await LanguageModel.create({
         monitor(m) {
           m.addEventListener('downloadprogress', (e) => {
-            console.log(`Downloaded ${e.loaded * 100}%`);
-            onDownloadProgress?.(e.loaded * 100);
+            onDownloadProgress?.(e.loaded);
           });
         },
         initialPrompts: [
@@ -49,10 +50,13 @@ class AiService {
     }
   }
 
-  async runPrompt(payload: PromptPayload): Promise<string> {
+  async runPrompt(
+    payload: PromptPayload,
+    onDownloadProgress?: DownloadProgressCallback,
+  ): Promise<string> {
     try {
       if (!this.session) {
-        this.session = await this.getSession();
+        this.session = await this.getSession(onDownloadProgress);
       }
 
       const { url, title, folderListString } = payload;

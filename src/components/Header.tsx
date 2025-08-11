@@ -13,17 +13,17 @@ const links = [
     href: URLs.technicalDetails,
   },
   {
-    label: 'Project Website',
+    label: 'Visit Website',
     href: URLs.website,
   },
   // {
   //   label: 'About Extension',
   //   href: URLs.about,
   // },
-  {
-    label: 'Suggest a Feature',
-    href: URLs.suggestFeature,
-  },
+  // {
+  //   label: 'Suggest a Feature',
+  //   href: URLs.suggestFeature,
+  // },
   // {
   //   label: 'Technical Requirements',
   //   href: URLs.technicalDetails,

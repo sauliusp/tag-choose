@@ -10,6 +10,7 @@ export enum ActionType {
   SetCurrentTab = 'SetCurrentTab',
   SetFolders = 'SetFolders',
   SetUiState = 'SetUiState',
+  UpdateAiProgress = 'UpdateAiProgress',
   UpdateTabTitle = 'UpdateTabTitle',
 }
 
@@ -23,6 +24,7 @@ export type Action =
     }
   | { type: ActionType.SetFolders; payload: Folder[] }
   | { type: ActionType.SetUiState; payload: UiState }
+  | { type: ActionType.UpdateAiProgress; payload: number }
   | { type: ActionType.UpdateTabTitle; payload: string };
 
 export enum UiState {
@@ -31,6 +33,7 @@ export enum UiState {
 
 export interface State {
   aiCapabilities: Availability | null;
+  aiProgress: number | null;
   aiResponse: string | null;
   allFolderIds: Folder['id'][];
   currentTab: CurrentTab;
@@ -43,6 +46,7 @@ export interface State {
 
 export const INITIAL_STATE: State = {
   aiCapabilities: null,
+  aiProgress: null,
   aiResponse: null,
   allFolderIds: [],
   currentTab: {
@@ -83,6 +87,11 @@ export function reducer(state: State, action: Action): State {
       return {
         ...state,
         currentTab: { ...state.currentTab, title: action.payload },
+      };
+    case ActionType.UpdateAiProgress:
+      return {
+        ...state,
+        aiProgress: action.payload,
       };
     case ActionType.SetFolders: {
       const { foldersById, foldersByTitle, selectedFolderIds, allFolderIds } =

@@ -8,10 +8,6 @@ export const AlertsContainer: React.FC = () => {
 
   const showSavedTabAlert = computed.savedTab !== null;
 
-  const showDownloadAlert =
-    state.aiCapabilities === 'downloadable' ||
-    state.aiCapabilities === 'downloading';
-
   const showUnavailableAlert = state.aiCapabilities === 'unavailable';
 
   return (
@@ -48,19 +44,6 @@ export const AlertsContainer: React.FC = () => {
             Technical Details
           </Link>{' '}
           page.
-        </Alert>
-      )}
-      {/* Renders ONLY while the model is downloading. */}
-      {showDownloadAlert && (
-        <Alert
-          severity="info" // Changed to info as this is a transient, expected state.
-          sx={{ mb: 2 }}
-          role="alert"
-          aria-live="assertive"
-        >
-          The AI model is being downloaded... This may take some time, but you
-          can still tag this bookmark manually using autocomplete in the
-          meantime.
         </Alert>
       )}
     </>

@@ -7,6 +7,7 @@ import {
   Paper,
   Fab,
   Box,
+  Tooltip,
 } from '@mui/material';
 import { useStoreContext } from '../store/StoreContext';
 import { bookmarkService } from '../services/bookmarkService';
@@ -22,6 +23,8 @@ export const TagSelect: React.FC = () => {
   const [error, setError] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const showDownloadPopover = isLoading && computed.aiDownloadPercentage;
 
   const aiButtonEnabled = computed.aiReady && !isLoading;
 
@@ -44,7 +47,10 @@ export const TagSelect: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const result = await aiService.runPrompt(promptPayload);
+      const result = await aiService.runPrompt(
+        promptPayload,
+        handleDownloadProgress,
+      );
 
       dispatch({ type: ActionType.SetAiSuggestion, payload: result });
     } catch (err) {
@@ -52,6 +58,10 @@ export const TagSelect: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDownloadProgress = (progress: number) => {
+    dispatch({ type: ActionType.UpdateAiProgress, payload: progress });
   };
 
   const handleTagDelete = (folderId: Folder['id']) => {
@@ -117,16 +127,23 @@ export const TagSelect: React.FC = () => {
               {isLoading && <LinearProgress aria-label="Loading" />}
             </Box>
 
-            <Fab
-              color="primary"
-              aria-label="Suggest folders"
-              size="small"
-              disabled={!aiButtonEnabled}
-              sx={{ flexShrink: 0, ml: '12px', mt: '9px' }}
-              onClick={() => handlePrompt(computed.promptPayload)}
+            <Tooltip
+              open={!!showDownloadPopover}
+              title={`Downloading AI model (~4GB)... ${computed.aiDownloadPercentage} complete`}
+              placement="top"
+              arrow
             >
-              <AutoAwesomeIcon />
-            </Fab>
+              <Fab
+                color="primary"
+                aria-label="Suggest folders"
+                size="small"
+                disabled={!aiButtonEnabled}
+                sx={{ flexShrink: 0, ml: '12px', mt: '9px' }}
+                onClick={() => handlePrompt(computed.promptPayload)}
+              >
+                <AutoAwesomeIcon />
+              </Fab>
+            </Tooltip>
           </Paper>
         )}
       />

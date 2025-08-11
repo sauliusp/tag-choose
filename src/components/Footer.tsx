@@ -3,22 +3,23 @@ import { Box, Toolbar, AppBar, Link, Tooltip } from '@mui/material';
 import { URLs } from '../parameters';
 
 const links = [
+  // {
+  //   label: "Doesn't work?",
+  //   href: URLs.technicalDetails,
+  // },
   {
-    label: "Doesn't work?",
-    href: URLs.technicalDetails,
-  },
-  {
-    label: 'Project Website',
+    label: 'Visit Website',
     href: URLs.about,
   },
   {
     label: 'Suggest a Feature',
     href: URLs.suggestFeature,
+    popoverText: '🙏',
   },
   {
     label: 'Write a Review',
     href: URLs.review,
-    popoverText: 'Your positive review fuels my motivation ❤️',
+    popoverText: '🙏',
   },
   // {
   //   label: 'Buy me a Coffee',
@@ -104,7 +105,7 @@ export const Footer: React.FC = () => {
             aria-label="Buy me a coffee - opens in new tab"
           >
             <Tooltip
-              title="🙏🙏🙏❤️❤️❤️"
+              title="🙏🙏❤️❤️"
               placement="right"
               arrow
               open={true}
