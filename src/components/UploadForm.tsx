@@ -7,7 +7,6 @@ import {
   TextField,
   Button,
   Container,
-  Typography,
   InputAdornment,
   ButtonOwnProps,
 } from '@mui/material';
@@ -118,9 +117,6 @@ export const UploadForm: React.FC = () => {
     <Container sx={{ py: 3 }} role="form">
       <AlertsContainer />
 
-      <Typography variant="subtitle1" gutterBottom>
-        {ctaText}
-      </Typography>
       {currentTab && (
         <TextField
           label="Bookmark Title"

@@ -20,7 +20,6 @@ export interface StoreContextProps {
 interface ComputedProps {
   aiReady: boolean;
   aiDownloadable: boolean;
-  aiDownloadPercentage: string | undefined;
   folderListString: string;
   promptPayload: PromptPayload;
   savedTab: SavedTab | null;
@@ -39,19 +38,6 @@ const StoreProvider = ({ children }: { children: ReactNode }) => {
       return ['downloading', 'downloadable'].includes(
         state.aiCapabilities as Availability,
       );
-    },
-    get aiDownloadPercentage(): string | undefined {
-      if (!this.aiDownloadable) {
-        return undefined;
-      }
-
-      if (state.aiProgress === null) {
-        return '2%';
-      }
-
-      const progress = Math.max(state.aiProgress, 0.02);
-
-      return `${Math.round(progress * 100)}%`;
     },
     get folderListString(): string {
       return Object.keys(state.foldersByTitle).join(', ');

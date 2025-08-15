@@ -50,13 +50,10 @@ class AiService {
     }
   }
 
-  async runPrompt(
-    payload: PromptPayload,
-    onDownloadProgress?: DownloadProgressCallback,
-  ): Promise<string> {
+  async runPrompt(payload: PromptPayload): Promise<string> {
     try {
       if (!this.session) {
-        this.session = await this.getSession(onDownloadProgress);
+        this.session = await this.getSession();
       }
 
       const { url, title, folderListString } = payload;

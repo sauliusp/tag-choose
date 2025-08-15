@@ -8,13 +8,18 @@ const links = [
   //   label: 'Project Website',
   //   href: URLs.website,
   // },
-  {
-    label: "Doesn't work?",
-    href: URLs.technicalDetails,
-  },
+
   {
     label: 'Visit Website',
     href: URLs.website,
+  },
+  {
+    label: 'AI not available?',
+    href: URLs.aiNotAvailable,
+  },
+  {
+    label: 'Waiting for AI Download?',
+    href: URLs.aiInitialDownload,
   },
   // {
   //   label: 'About Extension',
