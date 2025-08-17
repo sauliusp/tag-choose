@@ -6,12 +6,12 @@ import { PromoLink } from '../types/PromoLink';
 
 const links: PromoLink[] = [
   {
-    label: 'AI Features Not Available?',
-    href: URLs.aiNotAvailable,
-  },
-  {
     label: 'AI Download Taking Long?',
     href: URLs.aiInitialDownload,
+  },
+  {
+    label: 'AI Features Not Available?',
+    href: URLs.aiNotAvailable,
   },
   {
     label: 'Visit Website',

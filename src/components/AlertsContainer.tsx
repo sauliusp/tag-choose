@@ -17,10 +17,11 @@ export const AlertsContainer: React.FC = () => {
           severity="success"
           sx={{ mb: 2 }}
           role="alert"
+          variant="outlined"
           aria-live="polite"
         >
-          This website is already bookmarked, but you can update its title or
-          modify the associated folders.
+          This website is already bookmarked. You can update its title and
+          folders.
         </Alert>
       )}
       {/* Renders when the model is not supported or unavailable on the device. */}
