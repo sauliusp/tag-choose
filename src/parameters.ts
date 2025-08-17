@@ -10,5 +10,7 @@ export const URLs = {
   suggestFeature: 'https://tagchoose.featurebase.app/',
   review:
     'https://chromewebstore.google.com/detail/tagchoose/hlfgdfpeekcelanebbfchnnneijhophh/reviews',
+  rateExtension:
+    'https://chromewebstore.google.com/detail/tagchoose/hlfgdfpeekcelanebbfchnnneijhophh/reviews',
   privacyPolicy: 'https://tagchoose.site/privacy-policy',
 };

@@ -2,41 +2,21 @@ import React from 'react';
 import { Link, Box, Toolbar, AppBar } from '@mui/material';
 import logo from '../../public/logo.svg';
 import { URLs } from '../parameters';
+import { PromoLink } from '../types/PromoLink';
 
-const links = [
-  // {
-  //   label: 'Project Website',
-  //   href: URLs.website,
-  // },
-
+const links: PromoLink[] = [
   {
-    label: 'Visit Website',
-    href: URLs.website,
-  },
-  {
-    label: 'AI not available?',
+    label: 'AI Features Not Available?',
     href: URLs.aiNotAvailable,
   },
   {
-    label: 'Waiting for AI Download?',
+    label: 'AI Download Taking Long?',
     href: URLs.aiInitialDownload,
   },
-  // {
-  //   label: 'About Extension',
-  //   href: URLs.about,
-  // },
-  // {
-  //   label: 'Suggest a Feature',
-  //   href: URLs.suggestFeature,
-  // },
-  // {
-  //   label: 'Technical Requirements',
-  //   href: URLs.technicalDetails,
-  // },
-  // {
-  //   label: 'Privacy Policy',
-  //   href: URLs.privacyPolicy,
-  // },
+  {
+    label: 'Visit Website',
+    href: URLs.about,
+  },
 ];
 
 export const Header: React.FC = () => {
@@ -73,9 +53,9 @@ export const Header: React.FC = () => {
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
-              underline="none"
               aria-label={link.label}
-              sx={{ color: 'text.secondary' }}
+              color="text.secondary"
+              underline="hover"
             >
               {link.label}
             </Link>

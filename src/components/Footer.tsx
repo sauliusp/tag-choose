@@ -1,12 +1,9 @@
 import React from 'react';
 import { Box, Toolbar, AppBar, Link, Tooltip } from '@mui/material';
 import { URLs } from '../parameters';
+import { PromoLink } from '../types/PromoLink';
 
-const links = [
-  // {
-  //   label: "Doesn't work?",
-  //   href: URLs.technicalDetails,
-  // },
+const leftLinks: PromoLink[] = [
   {
     label: 'Visit Website',
     href: URLs.about,
@@ -16,24 +13,72 @@ const links = [
     href: URLs.suggestFeature,
     popoverText: '🙏',
   },
+];
+
+const rightLinks: PromoLink[] = [
   {
     label: 'Write a Review',
     href: URLs.review,
     popoverText: '🙏',
   },
-  // {
-  //   label: 'Buy me a Coffee',
-  //   href: URLs.buyMeACoffee,
-  //   highlight: true,
-  // },
+  {
+    label: 'Rate the Extension',
+    href: URLs.rateExtension,
+    popoverText: '🙏',
+  },
 ];
 
 export const Footer: React.FC = () => {
+  const renderLinks = (links: PromoLink[]) => {
+    return links.map((link) => (
+      <React.Fragment key={link.label}>
+        {link.popoverText ? (
+          <Tooltip
+            title={link.popoverText}
+            placement="top"
+            arrow
+            PopperProps={{
+              sx: {
+                '& .MuiTooltip-tooltip': {
+                  bgcolor: 'background.paper',
+                  color: 'text.primary',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  boxShadow: 1,
+                },
+              },
+            }}
+          >
+            <Link
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={link.label}
+              color="text.secondary"
+              underline="hover"
+            >
+              {link.label}
+            </Link>
+          </Tooltip>
+        ) : (
+          <Link
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={link.label}
+            color="text.secondary"
+            underline="hover"
+          >
+            {link.label}
+          </Link>
+        )}
+      </React.Fragment>
+    ));
+  };
+
   return (
     <AppBar color="transparent" position="static" role="footer">
-      <Toolbar
-        sx={{ flexDirection: 'column', paddingTop: 3, paddingBottom: 2 }}
-      >
+      <Toolbar sx={{ flexDirection: 'column' }}>
         <Box
           sx={{
             display: 'flex',
@@ -43,61 +88,8 @@ export const Footer: React.FC = () => {
             alignItems: 'center',
           }}
         >
-          {links.map((link) => (
-            <React.Fragment key={link.label}>
-              {link.popoverText ? (
-                <Tooltip
-                  title={link.popoverText}
-                  placement="top"
-                  arrow
-                  open={true}
-                  disableFocusListener
-                  disableHoverListener
-                  disableTouchListener
-                  PopperProps={{
-                    sx: {
-                      '& .MuiTooltip-tooltip': {
-                        bgcolor: 'background.paper',
-                        color: 'text.primary',
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        boxShadow: 1,
-                      },
-                    },
-                  }}
-                >
-                  <Link
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    underline="none"
-                    aria-label={link.label}
-                    sx={{ color: 'text.secondary' }}
-                  >
-                    {link.label}
-                  </Link>
-                </Tooltip>
-              ) : (
-                <Link
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  underline="none"
-                  aria-label={link.label}
-                  sx={{ color: 'text.secondary' }}
-                >
-                  {link.label}
-                </Link>
-              )}
-            </React.Fragment>
-          ))}
-        </Box>
+          {renderLinks(leftLinks)}
 
-        <Box
-          sx={{ textAlign: 'center', marginTop: 3 }}
-          role="complementary"
-          aria-label="Donation option"
-        >
           <Link
             href="https://www.buymeacoffee.com/saulius.developer"
             target="_blank"
@@ -105,13 +97,9 @@ export const Footer: React.FC = () => {
             aria-label="Buy me a coffee - opens in new tab"
           >
             <Tooltip
-              title="🙏🙏❤️❤️"
-              placement="right"
+              title="🙏🙏🙏❤️❤️❤️"
+              placement="top"
               arrow
-              open={true}
-              disableFocusListener
-              disableHoverListener
-              disableTouchListener
               PopperProps={{
                 sx: {
                   '& .MuiTooltip-tooltip': {
@@ -128,12 +116,14 @@ export const Footer: React.FC = () => {
                 src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
                 alt="Buy Me A Coffee"
                 style={{
-                  height: '42px',
-                  width: '152px',
+                  height: '32px',
+                  width: '114px',
                 }}
               />
             </Tooltip>
           </Link>
+
+          {renderLinks(rightLinks)}
         </Box>
       </Toolbar>
     </AppBar>
