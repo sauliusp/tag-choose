@@ -9,6 +9,7 @@ import {
   Container,
   InputAdornment,
   ButtonOwnProps,
+  Tooltip,
 } from '@mui/material';
 import { TagSelect } from './TagSelect';
 import { ActionType } from '../store/Store';
@@ -144,18 +145,27 @@ export const UploadForm: React.FC = () => {
         />
       )}
       <TagSelect aria-label="Tag Selection" />
-      <Button
-        variant="contained"
-        color={ctaButtonConfig.color}
-        size="large"
-        onClick={handleSubmit}
-        fullWidth
-        sx={{ mt: 3 }}
-        role="submit"
-        aria-label="Submit"
+      <Tooltip
+        title="No folders selected. Website will be saved to the Bookmarks Bar."
+        placement="top"
+        arrow
+        disableHoverListener={selectedFolderIds.length > 0}
       >
-        {ctaButtonConfig.content}
-      </Button>
+        <span>
+          <Button
+            variant="contained"
+            color={ctaButtonConfig.color}
+            size="large"
+            onClick={handleSubmit}
+            fullWidth
+            sx={{ mt: 3 }}
+            role="submit"
+            aria-label="Submit"
+          >
+            {ctaButtonConfig.content}
+          </Button>
+        </span>
+      </Tooltip>
     </Container>
   );
 };
