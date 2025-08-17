@@ -97,6 +97,8 @@ export const UploadForm: React.FC = () => {
 
   const ctaText = `${isTabSaved ? 'Update' : 'Save'} Bookmark`;
 
+  const showSubmitTooltip = selectedFolderIds.length === 0;
+
   const ctaButtonConfig: {
     color: ButtonOwnProps['color'];
     content: React.ReactNode;
@@ -146,10 +148,11 @@ export const UploadForm: React.FC = () => {
       )}
       <TagSelect aria-label="Tag Selection" />
       <Tooltip
-        title="No folders selected. Website will be saved to the Bookmarks Bar."
+        title="No folders selected. Saves to Bookmarks Bar."
         placement="top"
         arrow
-        disableHoverListener={selectedFolderIds.length > 0}
+        disableHoverListener={!showSubmitTooltip}
+        disableFocusListener={!showSubmitTooltip}
       >
         <span>
           <Button

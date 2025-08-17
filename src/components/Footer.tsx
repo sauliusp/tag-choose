@@ -5,11 +5,11 @@ import { PromoLink } from '../types/PromoLink';
 
 const leftLinks: PromoLink[] = [
   {
-    label: 'Visit Website',
+    label: 'Visit website',
     href: URLs.about,
   },
   {
-    label: 'Suggest a Feature',
+    label: 'Suggest a feature',
     href: URLs.suggestFeature,
     popoverText: '🙏',
   },
@@ -17,12 +17,12 @@ const leftLinks: PromoLink[] = [
 
 const rightLinks: PromoLink[] = [
   {
-    label: 'Write a Review',
+    label: 'Write a review',
     href: URLs.review,
     popoverText: '🙏',
   },
   {
-    label: 'Rate the Extension',
+    label: 'Rate #TagChoose',
     href: URLs.rateExtension,
     popoverText: '🙏',
   },
