@@ -1,0 +1,218 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "status": 200,
+      "canonical": "https://tagchoose.site/",
+      "h1": 1,
+      "links": [
+        "/",
+        "/",
+        "/guides/",
+        "/help/",
+        "/help/",
+        "/technical-details/",
+        "/help/",
+        "/guides/save-bookmark-in-multiple-folders/",
+        "/guides/chrome-bookmark-tags/",
+        "/guides/private-ai-bookmark-manager/",
+        "/guides/bookmark-keyboard-shortcut/",
+        "/",
+        "/privacy-policy/",
+        "/help/"
+      ]
+    },
+    {
+      "path": "/guides/",
+      "status": 200,
+      "canonical": "https://tagchoose.site/guides/",
+      "h1": 1,
+      "links": [
+        "/",
+        "/",
+        "/guides/",
+        "/help/",
+        "/",
+        "/guides/save-bookmark-in-multiple-folders/",
+        "/guides/chrome-bookmark-tags/",
+        "/guides/private-ai-bookmark-manager/",
+        "/guides/bookmark-keyboard-shortcut/",
+        "/",
+        "/privacy-policy/",
+        "/help/"
+      ]
+    },
+    {
+      "path": "/guides/save-bookmark-in-multiple-folders/",
+      "status": 200,
+      "canonical": "https://tagchoose.site/guides/save-bookmark-in-multiple-folders/",
+      "h1": 1,
+      "links": [
+        "/",
+        "/",
+        "/guides/",
+        "/help/",
+        "/",
+        "/updates/",
+        "/guides/chrome-bookmark-tags/",
+        "/",
+        "/privacy-policy/",
+        "/help/"
+      ]
+    },
+    {
+      "path": "/guides/chrome-bookmark-tags/",
+      "status": 200,
+      "canonical": "https://tagchoose.site/guides/chrome-bookmark-tags/",
+      "h1": 1,
+      "links": [
+        "/",
+        "/",
+        "/guides/",
+        "/help/",
+        "/",
+        "/help/",
+        "/",
+        "/privacy-policy/",
+        "/help/"
+      ]
+    },
+    {
+      "path": "/guides/private-ai-bookmark-manager/",
+      "status": 200,
+      "canonical": "https://tagchoose.site/guides/private-ai-bookmark-manager/",
+      "h1": 1,
+      "links": [
+        "/",
+        "/",
+        "/guides/",
+        "/help/",
+        "/",
+        "/privacy-policy/",
+        "/help/",
+        "/",
+        "/privacy-policy/",
+        "/help/"
+      ]
+    },
+    {
+      "path": "/guides/bookmark-keyboard-shortcut/",
+      "status": 200,
+      "canonical": "https://tagchoose.site/guides/bookmark-keyboard-shortcut/",
+      "h1": 1,
+      "links": [
+        "/",
+        "/",
+        "/guides/",
+        "/help/",
+        "/",
+        "/guides/save-bookmark-in-multiple-folders/",
+        "/",
+        "/privacy-policy/",
+        "/help/"
+      ]
+    },
+    {
+      "path": "/help/",
+      "status": 200,
+      "canonical": "https://tagchoose.site/help/",
+      "h1": 1,
+      "links": [
+        "/",
+        "/",
+        "/guides/",
+        "/help/",
+        "/",
+        "/updates/",
+        "/",
+        "/privacy-policy/",
+        "/help/"
+      ]
+    },
+    {
+      "path": "/privacy-policy/",
+      "status": 200,
+      "canonical": "https://tagchoose.site/privacy-policy/",
+      "h1": 1,
+      "links": [
+        "/",
+        "/",
+        "/guides/",
+        "/help/",
+        "/",
+        "/",
+        "/privacy-policy/",
+        "/help/"
+      ]
+    },
+    {
+      "path": "/updates/",
+      "status": 200,
+      "canonical": "https://tagchoose.site/updates/",
+      "h1": 1,
+      "links": [
+        "/",
+        "/",
+        "/guides/",
+        "/help/",
+        "/",
+        "/",
+        "/privacy-policy/",
+        "/help/"
+      ]
+    },
+    {
+      "path": "/updates/explaining-the-ai-not-available-message/",
+      "status": 200,
+      "canonical": "https://tagchoose.site/updates/explaining-the-ai-not-available-message/",
+      "h1": 1,
+      "links": [
+        "/",
+        "/",
+        "/guides/",
+        "/help/",
+        "/",
+        "/help/",
+        "/",
+        "/privacy-policy/",
+        "/help/"
+      ]
+    },
+    {
+      "path": "/updates/understanding-initial-ai-model-download/",
+      "status": 200,
+      "canonical": "https://tagchoose.site/updates/understanding-initial-ai-model-download/",
+      "h1": 1,
+      "links": [
+        "/",
+        "/",
+        "/guides/",
+        "/help/",
+        "/",
+        "/help/",
+        "/",
+        "/privacy-policy/",
+        "/help/"
+      ]
+    },
+    {
+      "path": "/technical-details/",
+      "status": 200,
+      "canonical": "https://tagchoose.site/technical-details/",
+      "h1": 1,
+      "links": [
+        "/",
+        "/",
+        "/guides/",
+        "/help/",
+        "/",
+        "/help/",
+        "/",
+        "/privacy-policy/",
+        "/help/"
+      ]
+    }
+  ],
+  "missing_page_status": 404,
+  "robots": "User-Agent: *\nAllow: /\n\nSitemap: https://tagchoose.site/sitemap.xml\n"
+}

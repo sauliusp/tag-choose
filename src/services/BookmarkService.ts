@@ -2,35 +2,26 @@ import { Folder } from '../types/Folder';
 import { Bookmark } from '../types/Bookmark';
 import { SavedTab } from '../types/SavedTab';
 
-class BookmarkService {
-  private static instance: BookmarkService;
+export function writableFolders(
+  nodes: chrome.bookmarks.BookmarkTreeNode[],
+  parents: string[] = [],
+  blocked = false,
+): Folder[] {
+  return nodes.flatMap((node) => {
+    const readOnly = blocked || !!node.unmodifiable;
+    if (node.url || readOnly) return [];
+    const path = node.title ? [...parents, node.title] : parents;
+    const folder =
+      node.id !== '0' && node.parentId
+        ? [{ ...node, children: undefined, path: path.join(' / ') }]
+        : [];
+    return [...folder, ...writableFolders(node.children ?? [], path, readOnly)];
+  });
+}
 
-  private constructor() {}
-
-  public static getInstance(): BookmarkService {
-    if (!BookmarkService.instance) {
-      BookmarkService.instance = new BookmarkService();
-    }
-    return BookmarkService.instance;
-  }
-
+export class BookmarkService {
   async getAllFolders(): Promise<Folder[]> {
-    const flattenFolders = (nodes: Folder[]): Folder[] => {
-      const folders: Folder[] = [];
-      for (const node of nodes) {
-        if (node.children) {
-          const { id, title, children } = node;
-
-          folders.push({ id, title });
-          folders.push(...flattenFolders(children));
-        }
-      }
-      return folders;
-    };
-
-    const bookmarkTree = await chrome.bookmarks.getTree();
-
-    return flattenFolders(bookmarkTree);
+    return writableFolders(await chrome.bookmarks.getTree());
   }
 
   async upsertBookmarkInMultipleFolders(
@@ -38,92 +29,71 @@ class BookmarkService {
     title: string,
     url: string,
   ): Promise<{ updated: number; created: number }> {
-    if (!folderIds || !title || !url) {
+    title = title.trim();
+    if (!title || !url)
+      throw new Error('Enter a bookmark title and open a page to save.');
+    let parsed: URL;
+    try {
+      parsed = new URL(url);
+    } catch {
+      throw new Error('This page has no valid URL to bookmark.');
+    }
+    if (!['http:', 'https:', 'file:', 'ftp:'].includes(parsed.protocol))
       throw new Error(
-        'Folder IDs, title, and URL are required to create bookmarks.',
+        'Open a website or file to bookmark. Browser settings and extension pages cannot be saved here.',
       );
-    }
-
-    const result = {
-      updated: 0,
-      created: 0,
-    };
-
-    if (folderIds.length === 0) {
-      folderIds = ['1']; // Default to the "Bookmarks Bar" folder.
-    }
-
-    const folderIdsSet = new Set(folderIds);
-
-    const matchingBookmarks = await this.searchByUrl(url);
-
-    for (const bookmark of matchingBookmarks) {
-      if (!bookmark.parentId) {
-        continue;
+    const folders = await this.getAllFolders();
+    const destinations = [...new Set(folderIds)];
+    if (!destinations.length) throw new Error('Choose at least one folder.');
+    if (destinations.some((id) => !folders.some((folder) => folder.id === id)))
+      throw new Error(
+        'A selected folder is no longer available. Reopen TagChoose and choose an existing folder.',
+      );
+    const matches = await this.searchByUrl(url);
+    const result = { updated: 0, created: 0 };
+    // Add/update only. Unselected copies and duplicates are never deleted.
+    for (const parentId of destinations) {
+      const existing = matches.filter(
+        (bookmark) => bookmark.parentId === parentId,
+      );
+      try {
+        if (existing.length) {
+          for (const bookmark of existing) {
+            if (bookmark.unmodifiable)
+              throw new Error('This bookmark is read-only');
+            if (bookmark.title !== title)
+              await chrome.bookmarks.update(bookmark.id, { title });
+          }
+          result.updated++;
+        } else {
+          await chrome.bookmarks.create({ parentId, title, url });
+          result.created++;
+        }
+      } catch {
+        throw new Error(
+          `Saved in ${result.updated + result.created} location(s), but could not finish. Your existing bookmarks are safe. Reopen TagChoose to check the folders and retry.`,
+        );
       }
-
-      if (folderIdsSet.has(bookmark.parentId)) {
-        await chrome.bookmarks.update(bookmark.id, { title });
-
-        result.updated += 1;
-
-        folderIdsSet.delete(bookmark.parentId);
-
-        continue;
-      }
-
-      await chrome.bookmarks.remove(bookmark.id);
     }
-
-    for (const folderId of folderIdsSet) {
-      await chrome.bookmarks.create({
-        parentId: folderId,
-        title,
-        url,
-      });
-
-      result.created += 1;
-    }
-
     return result;
   }
 
   async searchByUrl(url: string): Promise<Bookmark[]> {
-    if (!url) {
-      throw new Error('URL is required to search bookmarks.');
-    }
-
-    return await chrome.bookmarks.search({ url });
+    if (!url) throw new Error('A page URL is required.');
+    return (await chrome.bookmarks.search({ url })).filter(
+      (bookmark) => bookmark.url === url,
+    );
   }
 
   async getSavedTabByUrl(url: string): Promise<SavedTab | null> {
-    if (!url) {
-      throw new Error('URL is required to search bookmarks.');
-    }
-
-    const matchingBookmarks = await this.searchByUrl(url);
-
-    if (matchingBookmarks.length === 0) {
-      return null;
-    }
-
-    const bookmark = matchingBookmarks[0];
-    const folderIds = new Set<string>();
-
-    for (const match of matchingBookmarks) {
-      if (match.parentId) {
-        folderIds.add(match.parentId);
-      }
-    }
-
-    const folderPromises = Array.from(folderIds).map((folderId) =>
-      chrome.bookmarks.get(folderId).then((folders) => folders[0]),
-    );
-
-    const folders = await Promise.all(folderPromises);
-
-    return { bookmark, folders };
+    const matches = await this.searchByUrl(url);
+    if (!matches.length) return null;
+    const folders = await this.getAllFolders();
+    const ids = new Set(matches.map((bookmark) => bookmark.parentId));
+    return {
+      bookmark: matches[0],
+      folders: folders.filter((folder) => ids.has(folder.id)),
+    };
   }
 }
-
-export const bookmarkService = BookmarkService.getInstance();
+export const bookmarkService = new BookmarkService();

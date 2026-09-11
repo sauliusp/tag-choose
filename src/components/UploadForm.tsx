@@ -1,174 +1,151 @@
-import React, { useEffect } from 'react';
-import { tabPreviewService } from '../services/TabPreviewService';
-import { bookmarkService } from '../services/bookmarkService';
-import { useStoreContext } from '../store/StoreContext';
-
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  TextField,
+  Alert,
+  Box,
   Button,
   Container,
-  InputAdornment,
-  ButtonOwnProps,
-  Tooltip,
+  TextField,
+  Typography,
 } from '@mui/material';
+import { tabPreviewService } from '../services/TabPreviewService';
+import { bookmarkService } from '../services/BookmarkService';
+import { useStoreContext } from '../store/StoreContext';
 import { TagSelect } from './TagSelect';
-import { ActionType } from '../store/Store';
-import { SavedTab } from '../types/SavedTab';
-import { TabPreview } from '../types/TabPreview';
-import { aiService } from '../services/AiService';
-import { AlertsContainer } from './AlertsContainer';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-
-const POPUP_CLOSE_DELAY = 350;
-
-export const UploadForm: React.FC = () => {
-  const {
-    state: { currentTab, selectedFolderIds },
-    computed,
-    dispatch,
-  } = useStoreContext();
-
-  const [submitComplete, setSubmitComplete] = React.useState(false);
-
-  // This function remains the same.
-  const getCurrentTab = async () => {
-    try {
-      const tabPreview: TabPreview =
-        await tabPreviewService.getCurrentTabPreview();
-
-      const savedTab: SavedTab | null = await bookmarkService.getSavedTabByUrl(
-        tabPreview.url,
-      );
-
-      dispatch({
-        type: ActionType.SetCurrentTab,
-        payload: { tabPreview, savedTab },
-      });
-
-      if (savedTab) {
-        dispatch({
-          type: ActionType.SelectFolders,
-          payload: savedTab.folders.map((folder) => folder.id),
-        });
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const getAiCapabilities = async () => {
-    const capabilities = await aiService.getAiCapabilities();
-
-    dispatch({ type: ActionType.SetAiCapabilities, payload: capabilities });
-  };
-
+export const UploadForm = () => {
+  const { state, dispatch } = useStoreContext();
+  const [error, setError] = useState('');
+  const saving = state.saving;
+  const [success, setSuccess] = useState('');
+  const inFlight = useRef(false);
   useEffect(() => {
-    getCurrentTab();
-    getAiCapabilities();
-  }, []);
-
-  const handleSubmit = async () => {
-    if (submitComplete) {
-      return;
-    }
-
-    try {
-      await bookmarkService.upsertBookmarkInMultipleFolders(
-        selectedFolderIds,
-        currentTab.title,
-        currentTab.preview.url,
-      );
-
-      setSubmitComplete(true);
-
-      closePopup();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const closePopup = () => {
-    setTimeout(() => {
-      window.close();
-    }, POPUP_CLOSE_DELAY);
-  };
-
-  const isTabSaved = computed.savedTab !== null;
-
-  const ctaText = `${isTabSaved ? 'Update' : 'Save'} Bookmark`;
-
-  const showSubmitTooltip = selectedFolderIds.length === 0;
-
-  const ctaButtonConfig: {
-    color: ButtonOwnProps['color'];
-    content: React.ReactNode;
-  } = submitComplete
-    ? {
-        color: 'success',
-        content: (
-          <>
-            <CheckCircleIcon sx={{ mr: 1 }} /> {ctaText}
-          </>
-        ),
+    let active = true;
+    (async () => {
+      try {
+        const [tab, folders] = await Promise.all([
+          tabPreviewService.getCurrentTabPreview(),
+          bookmarkService.getAllFolders(),
+        ]);
+        const saved = await bookmarkService.getSavedTabByUrl(tab.url);
+        if (active) dispatch({ type: 'initialize', tab, folders, saved });
+      } catch (e) {
+        if (active)
+          setError(
+            e instanceof Error
+              ? e.message
+              : 'Could not load bookmarks. Reopen TagChoose to retry.',
+          );
       }
-    : {
-        color: 'primary',
-        content: ctaText,
-      };
-
+    })();
+    return () => {
+      active = false;
+    };
+  }, [dispatch]);
+  useEffect(() => {
+    setSuccess('');
+  }, [state.selectedFolderIds, state.title]);
+  const save = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (inFlight.current || !state.loaded) return;
+    inFlight.current = true;
+    dispatch({ type: 'save-start' });
+    setError('');
+    setSuccess('');
+    try {
+      const result = await bookmarkService.upsertBookmarkInMultipleFolders(
+        state.selectedFolderIds,
+        state.title,
+        state.url,
+      );
+      dispatch({ type: 'save-success' });
+      setSuccess(
+        `Saved in ${result.created + result.updated} folder${result.created + result.updated === 1 ? '' : 's'}. Existing copies are kept.`,
+      );
+    } catch (e) {
+      setError(
+        e instanceof Error ? e.message : 'Could not save. Please try again.',
+      );
+    } finally {
+      inFlight.current = false;
+      dispatch({ type: 'save-end' });
+    }
+  };
   return (
-    <Container sx={{ py: 3 }} role="form">
-      <AlertsContainer />
-
-      {currentTab && (
-        <TextField
-          label="Bookmark Title"
-          value={currentTab.title}
-          onChange={(e) =>
-            dispatch({
-              type: ActionType.UpdateTabTitle,
-              payload: e.target.value,
-            })
-          }
-          fullWidth
-          margin="normal"
-          aria-label="Bookmark Title"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <img
-                  src={currentTab.preview.faviconUrl}
-                  alt={`${currentTab.title} favicon`}
-                  style={{ width: 24, height: 24 }}
-                />
-              </InputAdornment>
-            ),
-          }}
-        />
+    <Container component="form" onSubmit={save} sx={{ py: 2.5 }}>
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
       )}
-      <TagSelect aria-label="Tag Selection" />
-      <Tooltip
-        title="No folders selected. Saves to Bookmarks Bar."
-        placement="top"
-        arrow
-        disableHoverListener={!showSubmitTooltip}
-        disableFocusListener={!showSubmitTooltip}
-      >
-        <span>
-          <Button
-            variant="contained"
-            color={ctaButtonConfig.color}
-            size="large"
-            onClick={handleSubmit}
+      {success && (
+        <Alert severity="success" sx={{ mb: 2 }}>
+          {success}
+        </Alert>
+      )}
+      {!state.loaded && !error && (
+        <Typography role="status">Loading your page and folders…</Typography>
+      )}
+      {state.loaded && (
+        <>
+          <Typography variant="h6" component="h1">
+            One page. All the right folders.
+          </Typography>
+          <Typography variant="body2" sx={{ mt: 0.5, mb: 2 }}>
+            AI suggests folders. Review its choices, or choose manually.
+          </Typography>
+          {state.saved && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              Already bookmarked. Saving updates selected locations and keeps
+              every other copy.
+            </Alert>
+          )}
+          <TextField
+            label="Bookmark title"
+            value={state.title}
+            onChange={(e) => {
+              setSuccess('');
+              dispatch({ type: 'title', value: e.target.value });
+            }}
             fullWidth
-            sx={{ mt: 3 }}
-            role="submit"
-            aria-label="Submit"
+            disabled={saving}
+            required
+            inputProps={{ maxLength: 2000 }}
+          />
+          <Typography
+            variant="caption"
+            component="p"
+            sx={{ mt: 0.75, overflowWrap: 'anywhere', color: 'text.secondary' }}
           >
-            {ctaButtonConfig.content}
-          </Button>
-        </span>
-      </Tooltip>
+            {state.url}
+          </Typography>
+          <TagSelect disabled={saving} />
+          {!state.folders.length && (
+            <Alert severity="info" sx={{ mt: 2 }}>
+              Create a bookmark folder in Chrome, then reopen TagChoose.
+            </Alert>
+          )}
+          <Box sx={{ mt: 2 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              size="large"
+              disabled={
+                saving || !state.title.trim() || !state.selectedFolderIds.length
+              }
+            >
+              {saving
+                ? 'Saving…'
+                : state.saved
+                  ? 'Save changes'
+                  : 'Save bookmark'}
+            </Button>
+          </Box>
+          <Typography variant="caption" component="p" sx={{ mt: 1 }}>
+            Each selected folder gets a copy. Unselected bookmarks stay where
+            they are.
+          </Typography>
+        </>
+      )}
     </Container>
   );
 };

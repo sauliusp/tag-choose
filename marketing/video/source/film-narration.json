@@ -1,0 +1,53 @@
+{
+  "text": "Save a page where you will actually find it again. Tag Choose puts one bookmark in all the folders that fit. Choose your folders, or ask private, on-device AI for suggestions. Edit the title. Review your choices. Save. No account. Your bookmarks stay in Chrome. Tag Choose. One page. All the right folders.",
+  "scenes": [
+    {
+      "scene": 0,
+      "text": "Save a page where you will actually find it again.",
+      "start": 0,
+      "end": 3.34,
+      "duration": 3.34
+    },
+    {
+      "scene": 1,
+      "text": "Tag Choose puts one bookmark in all the folders that fit.",
+      "start": 3.34,
+      "end": 6.92,
+      "duration": 3.58
+    },
+    {
+      "scene": 2,
+      "text": "Choose your folders, or ask private, on-device AI for suggestions.",
+      "start": 6.92,
+      "end": 11.98,
+      "duration": 5.06
+    },
+    {
+      "scene": 3,
+      "text": "Edit the title. Review your choices. Save.",
+      "start": 11.98,
+      "end": 15.92,
+      "duration": 3.94
+    },
+    {
+      "scene": 4,
+      "text": "No account. Your bookmarks stay in Chrome.",
+      "start": 15.92,
+      "end": 19.3,
+      "duration": 3.38
+    },
+    {
+      "scene": 5,
+      "text": "Tag Choose. One page. All the right folders.",
+      "start": 19.3,
+      "end": 23.080000000000002,
+      "duration": 3.78
+    }
+  ],
+  "duration": 23.080000000000002,
+  "reference_sha256": "d3d941a853e0dedca33123ace64371865ecb05e5c0237369f4e588bd8f8a691c",
+  "model": "mlx-community/chatterbox-multilingual-v3",
+  "exaggeration": 0.35,
+  "cfg_weight": 0.5,
+  "processing": "Six new natural scene performances joined in order. No tempo, pitch, waveform trimming or inserted pauses."
+}

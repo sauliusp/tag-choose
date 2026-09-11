@@ -20,3 +20,12 @@ Thumbs.db
 
 # Dist
 dist.zip
+release/*.zip
+website/node_modules/
+website/dist/
+marketing/video/audio/*.npy
+marketing/video/output/scene-*.mp4
+marketing/video/output/silent.mp4
+marketing/video/source/concat.txt
+marketing/video/source/head-*.txt
+marketing/video/source/sub-*.txt

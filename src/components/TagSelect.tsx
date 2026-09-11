@@ -1,297 +1,225 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  TextField,
+  Alert,
   Autocomplete,
+  Box,
+  Button,
   Chip,
   LinearProgress,
-  Paper,
-  Fab,
-  Box,
-  Popover,
-  Typography,
   Link,
-  IconButton,
-  CircularProgress,
+  TextField,
+  Typography,
 } from '@mui/material';
 import { useStoreContext } from '../store/StoreContext';
-import { bookmarkService } from '../services/bookmarkService';
-import { aiService } from '../services/AiService';
-import { ActionType } from '../store/Store';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import CloseIcon from '@mui/icons-material/Close';
-import { Folder } from '../types/Folder';
-import { PromptPayload } from '../types/PromptPayload';
+import { AiFlow, initialAiState } from '../services/AiFlow';
+import { AiService } from '../services/AiService';
 import { URLs } from '../parameters';
-
-const INITIAL_DOWNLOAD_POPOVER = {
-  heading: 'Preparing Private AI...',
-  body: 'For privacy, the on-device AI requires a one-time setup. Chrome will automatically download, install, and fine-tune the model (~4GB) in the background. This process can take a while to begin. Manual tagging is fully available. You can open "chrome://on-device-internals" in another tab for more details.',
-  linkText: 'Read more about this one-time setup',
-  linkUrl: URLs.aiInitialDownload,
-  show: false,
-};
-
-export const TagSelect: React.FC = () => {
-  const { state, computed, dispatch } = useStoreContext();
-  const aiDownloadButtonRef = useRef<HTMLButtonElement>(null);
-
-  const [error, setError] = useState('');
-
-  const [isLoading, setIsLoading] = useState(false);
-
-  const aiButtonEnabled = computed.aiReady && !isLoading;
-
-  const [downloadPopover, setDownloadPopover] = useState<{
-    heading: string;
-    body: string;
-    linkText: string;
-    linkUrl: string;
-    show: boolean;
-  }>(INITIAL_DOWNLOAD_POPOVER);
-
-  const downloadProgressPercentage = state.aiProgress
-    ? Math.round(state.aiProgress * 100)
-    : 0;
-
+export const TagSelect = ({ disabled = false }: { disabled?: boolean }) => {
+  const { state, dispatch } = useStoreContext();
+  const [status, setStatus] = useState(initialAiState);
+  const flow = useRef<AiFlow | null>(null);
+  const latest = useRef(state);
+  latest.current = state;
+  const initialRequest = useRef(false);
   useEffect(() => {
-    if (state.aiProgress === null) {
-      return;
-    }
-
-    if (state.aiProgress < 1) {
-      setDownloadPopover({
-        ...downloadPopover,
-        heading: `Downloading AI Model... ${downloadProgressPercentage}% complete`,
-        body: 'The private AI model (~4GB) is downloading to your device. This one-time download ensures your data is never sent to the cloud. You can close this popover; the download will continue in the background.',
-      });
-    } else {
-      setDownloadPopover({
-        ...INITIAL_DOWNLOAD_POPOVER,
-        heading: 'Download complete. Installing and fine-tuning...',
-        show: true,
-      });
-    }
-  }, [state.aiProgress]);
-
-  useEffect(() => {
-    const downloadFolders = async () => {
-      try {
-        const folders = await bookmarkService.getAllFolders();
-
-        dispatch({ type: ActionType.SetFolders, payload: folders });
-      } catch (error) {
-        console.error(error);
-      }
+    const current = new AiFlow(new AiService());
+    flow.current = current;
+    const unsub = current.subscribe(setStatus);
+    void current.check();
+    return () => {
+      unsub();
+      current.dispose();
     };
-
-    downloadFolders();
   }, []);
-
-  const handlePrompt = async (promptPayload: PromptPayload) => {
-    setError('');
-    setIsLoading(true);
-
-    try {
-      const result = await aiService.runPrompt(promptPayload);
-
-      dispatch({ type: ActionType.SetAiSuggestion, payload: result });
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
+  const suggest = () => {
+    const snapshot = latest.current;
+    dispatch({ type: 'ai-start' });
+    void flow.current
+      ?.run({
+        title: snapshot.title,
+        url: snapshot.url,
+        folders: snapshot.folders,
+      })
+      .then(() => {
+        if (flow.current?.state.phase === 'complete')
+          dispatch({
+            type: 'suggest',
+            ids: flow.current.state.ids,
+            revision: snapshot.selectionRevision,
+            title: snapshot.title,
+          });
+      });
+  };
+  useEffect(() => {
+    if (
+      status.phase === 'ready' &&
+      !initialRequest.current &&
+      state.folders.length
+    ) {
+      initialRequest.current = true;
+      suggest();
     }
+  }, [status.phase, state.folders.length]);
+  const folderLabel = (id: string) => {
+    const folder = state.folders.find((candidate) => candidate.id === id);
+    const path = folder?.path ?? folder?.title ?? id;
+    const duplicates = state.folders.filter(
+      (candidate) => (candidate.path ?? candidate.title) === path,
+    );
+    return duplicates.length > 1
+      ? `${path} (duplicate ${duplicates.findIndex((candidate) => candidate.id === id) + 1} of ${duplicates.length})`
+      : path;
   };
-
-  const handleAiDownload = async () => {
-    setError('');
-    setDownloadPopover({ ...downloadPopover, show: true });
-
-    try {
-      await aiService.getSession(handleDownloadProgress);
-
-      dispatch({ type: ActionType.SetAiCapabilities, payload: 'available' });
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setDownloadPopover(INITIAL_DOWNLOAD_POPOVER);
-    }
-  };
-
-  const handleDownloadProgress = (progress: number) => {
-    dispatch({ type: ActionType.UpdateAiProgress, payload: progress });
-  };
-
-  const handleTagDelete = (folderId: Folder['id']) => {
-    dispatch({
-      type: ActionType.SelectFolders,
-      payload: state.selectedFolderIds.filter((id) => id !== folderId),
-    });
-  };
-
-  const getTagIcon = (folderId: Folder['id']) =>
-    state.suggestedFolderIds.includes(folderId) ? (
-      <AutoAwesomeIcon color="primary" />
-    ) : undefined;
-
+  const additionalSuggestions = state.suggestedFolderIds.filter(
+    (id) => !state.selectedFolderIds.includes(id),
+  );
+  const busy =
+    ['checking', 'waiting', 'preparing', 'suggesting'].includes(status.phase) ||
+    (status.phase === 'downloading' && status.progress !== null);
+  const setup =
+    ['downloadable', 'downloading', 'unavailable'].includes(status.phase) &&
+    !busy;
   return (
-    <div>
+    <Box sx={{ mt: 2 }}>
+      <Box sx={{ mb: 2, p: 1.5, border: '1px solid #d8c7a6', borderRadius: 2 }}>
+        <Typography variant="subtitle2">
+          Private AI folder suggestions
+        </Typography>
+        <Box role="status" aria-live="polite">
+          <Typography variant="body2" sx={{ my: 1 }}>
+            {status.phase === 'checking'
+              ? 'Checking whether Chrome can run local AI…'
+              : status.phase === 'unavailable'
+                ? 'Chrome’s local AI is unavailable here. Automatic suggestions need a supported device and a ready model. You can choose folders manually and save.'
+                : status.phase === 'downloadable'
+                  ? 'To get automatic suggestions, Chrome needs to download and prepare its on-device model. Open setup for requirements and progress, or choose folders manually.'
+                  : status.phase === 'downloading' && status.progress === null
+                    ? 'Chrome reports a model download in progress. Open setup to follow it.'
+                    : status.phase === 'waiting'
+                      ? 'Waiting for Chrome to start the model…'
+                      : status.phase === 'downloading'
+                        ? `Downloading the model: ${Math.round((status.progress ?? 0) * 100)}%`
+                        : status.phase === 'preparing'
+                          ? 'Chrome is preparing the local model. Wait for suggestions, or choose folders manually.'
+                          : status.phase === 'suggesting'
+                            ? 'AI is choosing folders for this page…'
+                            : status.phase === 'complete' && !state.aiComplete
+                              ? 'The title changed. Choose Suggest again for updated AI suggestions, or select folders manually.'
+                            : status.message || 'Local AI is ready.'}
+          </Typography>
+          {busy && (
+            <LinearProgress
+              aria-label="Local AI progress"
+              variant={
+                status.phase === 'downloading' ? 'determinate' : 'indeterminate'
+              }
+              value={(status.progress ?? 0) * 100}
+            />
+          )}
+          {status.stalled && (
+            <Alert severity="info" sx={{ mt: 1 }}>
+              Chrome has not reported new progress for 20 seconds. You can stop
+              waiting and retry. This does not confirm a failed download.
+            </Alert>
+          )}
+        </Box>
+        <Box sx={{ display: 'flex', gap: 1, mt: 1, flexWrap: 'wrap' }}>
+          {setup && (
+            <Button
+              size="small"
+              variant="contained"
+              disabled={disabled}
+              onClick={() =>
+                void chrome.tabs.create({
+                  url: chrome.runtime.getURL('setup.html'),
+                })
+              }
+            >
+              Open AI setup
+            </Button>
+          )}
+          {!setup && !busy && (
+            <Button
+              size="small"
+              variant="outlined"
+              disabled={disabled || !state.folders.length}
+              onClick={suggest}
+            >
+              {status.phase === 'complete' ? 'Suggest again' : 'Retry AI'}
+            </Button>
+          )}
+          {busy && status.phase !== 'checking' && (
+            <Button size="small" onClick={() => flow.current?.cancel()}>
+              Stop waiting
+            </Button>
+          )}
+          <Link
+            href={disabled ? undefined : URLs.aiNotAvailable}
+            aria-disabled={disabled}
+            tabIndex={disabled ? -1 : undefined}
+            target="_blank"
+            rel="noreferrer"
+            sx={{ fontSize: 12, alignSelf: 'center' }}
+          >
+            Requirements & help
+          </Link>
+        </Box>
+        <Typography variant="caption" component="p" sx={{ mt: 1 }}>
+          Automatic suggestions use Chrome’s local AI only. Manual selection
+          works during setup or if AI is unavailable.
+        </Typography>
+      </Box>
+      {status.phase === 'complete' && additionalSuggestions.length > 0 && (
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            AI also suggested these folders. Add any that fit:
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            {additionalSuggestions.map((id) => (
+              <Chip
+                key={id}
+                label={`+ ${folderLabel(id)}`}
+                disabled={disabled}
+                onClick={() =>
+                  dispatch({
+                    type: 'select',
+                    ids: [...state.selectedFolderIds, id],
+                  })
+                }
+              />
+            ))}
+          </Box>
+        </Box>
+      )}
       <Autocomplete
         multiple
-        disabled={isLoading}
-        sx={{ mt: 2 }}
-        options={state.allFolderIds}
-        getOptionLabel={(folderId) => state.foldersById[folderId].title}
-        getOptionKey={(folderId) => folderId}
+        disabled={disabled}
+        options={state.folders.map((folder) => folder.id)}
         value={state.selectedFolderIds}
-        onChange={(_, folderIds) =>
-          dispatch({ type: ActionType.SelectFolders, payload: folderIds })
-        }
-        renderTags={(value: readonly string[], getTagProps) =>
-          value.map((id: string, index: number) => {
-            // eslint-disable-next-line
-            const { key, onDelete, ...tagProps } = getTagProps({ index });
-
+        getOptionKey={(id) => id}
+        getOptionLabel={folderLabel}
+        onChange={(_, ids) => dispatch({ type: 'select', ids })}
+        renderTags={(ids, getTagProps) =>
+          ids.map((id, index) => {
+            const { key, ...props } = getTagProps({ index });
             return (
-              <Chip
-                icon={getTagIcon(id)}
-                variant="outlined"
-                label={state.foldersById[id].title}
-                key={id}
-                onDelete={() => handleTagDelete(id)}
-                {...tagProps}
-                aria-label={`Tag: ${state.foldersById[id].title}`}
-              />
+              <Chip {...props} key={key} label={folderLabel(id)} size="small" />
             );
           })
         }
         renderInput={(params) => (
-          <Paper
-            elevation={0}
-            sx={{
-              display: 'flex',
-            }}
-          >
-            <Box sx={{ flexGrow: 1 }}>
-              <TextField
-                {...params}
-                error={!!error}
-                helperText={error}
-                label="Bookmark Tags | 1 Tag = 1 Folder"
-                placeholder="Bookmark Tags | 1 Tag = 1 Folder"
-                aria-label="Bookmark Tags | 1 Tag = 1 Folder"
-              />
-
-              {isLoading && <LinearProgress aria-label="Loading" />}
-            </Box>
-
-            <Popover
-              open={downloadPopover.show}
-              anchorEl={aiDownloadButtonRef.current}
-              onClose={() =>
-                setDownloadPopover({ ...downloadPopover, show: false })
-              }
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-              }}
-              transformOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-            >
-              <Box sx={{ p: 2, maxWidth: 350 }}>
-                <div>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'flex-start',
-                      mb: 1,
-                    }}
-                  >
-                    <Typography
-                      variant="h6"
-                      sx={{ fontSize: '1rem', fontWeight: 'bold' }}
-                    >
-                      {downloadPopover?.heading}
-                    </Typography>
-                    <IconButton
-                      size="small"
-                      onClick={() =>
-                        setDownloadPopover({ ...downloadPopover, show: false })
-                      }
-                      sx={{ p: 0.5, ml: 1 }}
-                    >
-                      <CloseIcon sx={{ fontSize: '1rem' }} />
-                    </IconButton>
-                  </Box>
-                  <Typography variant="body2" sx={{ mt: 1 }}>
-                    {downloadPopover?.body}
-                  </Typography>
-                  <Link
-                    href={downloadPopover?.linkUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    sx={{ mt: 1, display: 'block', fontSize: '0.875rem' }}
-                  >
-                    {downloadPopover?.linkText}
-                  </Link>
-                </div>
-              </Box>
-            </Popover>
-
-            {!computed.aiDownloadable && (
-              <Fab
-                color="primary"
-                aria-label="Suggest folders"
-                size="small"
-                disabled={!aiButtonEnabled}
-                sx={{ flexShrink: 0, ml: '12px', mt: '9px' }}
-                onClick={() => handlePrompt(computed.promptPayload)}
-              >
-                <AutoAwesomeIcon />
-              </Fab>
-            )}
-
-            {computed.aiDownloadable && (
-              <Box sx={{ position: 'relative', display: 'inline-block' }}>
-                <Fab
-                  ref={aiDownloadButtonRef}
-                  color="primary"
-                  aria-label="Download AI Model"
-                  size="small"
-                  sx={{
-                    flexShrink: 0,
-                    ml: '12px',
-                    mt: '9px',
-                    animation: 'pulse 2s ease-in-out infinite',
-                    '@keyframes pulse': {
-                      '0%': { opacity: 1 },
-                      '50%': { opacity: 0.6 },
-                      '100%': { opacity: 1 },
-                    },
-                  }}
-                  onClick={handleAiDownload}
-                >
-                  <AutoAwesomeIcon />
-                </Fab>
-                <CircularProgress
-                  size={56}
-                  thickness={3}
-                  sx={{
-                    position: 'absolute',
-                    top: '2px',
-                    left: '4px',
-                    color: 'primary.main',
-                    opacity: 0.8,
-                  }}
-                  variant={'indeterminate'}
-                />
-              </Box>
-            )}
-          </Paper>
+          <TextField
+            {...params}
+            label="Review bookmark folders"
+            placeholder="Search your bookmark folders"
+            helperText={
+              state.aiComplete
+                ? 'Keep or change the AI choices. Full paths distinguish matching names.'
+                : 'Choose folders manually now, or wait for AI suggestions.'
+            }
+          />
         )}
       />
-    </div>
+    </Box>
   );
 };

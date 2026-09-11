@@ -1,175 +1,120 @@
-import { CurrentTab } from '../types/CurrentTab';
 import { Folder } from '../types/Folder';
 import { SavedTab } from '../types/SavedTab';
 import { TabPreview } from '../types/TabPreview';
-
-export enum ActionType {
-  SelectFolders = 'SelectFolders',
-  SetAiCapabilities = 'SetAiCapabilities',
-  SetAiSuggestion = 'SetAiSuggestion',
-  SetCurrentTab = 'SetCurrentTab',
-  SetFolders = 'SetFolders',
-  SetUiState = 'SetUiState',
-  UpdateAiProgress = 'UpdateAiProgress',
-  UpdateTabTitle = 'UpdateTabTitle',
-}
-
-export type Action =
-  | { type: ActionType.SelectFolders; payload: Folder['id'][] }
-  | { type: ActionType.SetAiCapabilities; payload: Availability }
-  | { type: ActionType.SetAiSuggestion; payload: string }
-  | {
-      type: ActionType.SetCurrentTab;
-      payload: { tabPreview: TabPreview; savedTab: SavedTab | null };
-    }
-  | { type: ActionType.SetFolders; payload: Folder[] }
-  | { type: ActionType.SetUiState; payload: UiState }
-  | { type: ActionType.UpdateAiProgress; payload: number }
-  | { type: ActionType.UpdateTabTitle; payload: string };
-
-export enum UiState {
-  Upload = 'upload',
-}
-
 export interface State {
-  aiCapabilities: Availability | null;
-  aiProgress: number | null;
-  aiResponse: string | null;
-  allFolderIds: Folder['id'][];
-  currentTab: CurrentTab;
-  foldersById: Record<Folder['id'], Folder>;
-  foldersByTitle: Record<Folder['title'], Folder>;
-  suggestedFolderIds: Array<Folder['id']>;
-  selectedFolderIds: Array<Folder['id']>;
-  uiState: UiState;
+  loaded: boolean;
+  aiComplete: boolean;
+  folders: Folder[];
+  title: string;
+  url: string;
+  selectedFolderIds: string[];
+  suggestedFolderIds: string[];
+  autoSelectedFolderIds: string[];
+  saved: boolean;
+  saving: boolean;
+  selectionRevision: number;
 }
-
 export const INITIAL_STATE: State = {
-  aiCapabilities: null,
-  aiProgress: null,
-  aiResponse: null,
-  allFolderIds: [],
-  currentTab: {
-    folders: [],
-    preview: {
-      faviconUrl: '',
-      title: '',
-      url: '',
-    },
-    savedTab: null,
-    title: '',
-  },
-  foldersById: {},
-  foldersByTitle: {},
-  suggestedFolderIds: [],
+  loaded: false,
+  aiComplete: false,
+  folders: [],
+  title: '',
+  url: '',
   selectedFolderIds: [],
-  uiState: UiState.Upload,
+  suggestedFolderIds: [],
+  autoSelectedFolderIds: [],
+  saved: false,
+  saving: false,
+  selectionRevision: 0,
 };
-
+export type Action =
+  | {
+      type: 'initialize';
+      folders: Folder[];
+      tab: TabPreview;
+      saved: SavedTab | null;
+    }
+  | { type: 'ai-start' }
+  | { type: 'save-start' }
+  | { type: 'save-success' }
+  | { type: 'save-end' }
+  | { type: 'title'; value: string }
+  | { type: 'select'; ids: string[] }
+  | { type: 'suggest'; ids: string[]; revision: number; title: string };
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
-    case ActionType.SetUiState:
-      return { ...state, uiState: action.payload };
-    case ActionType.SetCurrentTab: {
-      const { savedTab, tabPreview } = action.payload;
-
+    case 'initialize':
+      return {
+        ...INITIAL_STATE,
+        loaded: true,
+        folders: action.folders,
+        title: action.saved?.bookmark.title || action.tab.title,
+        url: action.tab.url,
+        saved: !!action.saved,
+        selectedFolderIds:
+          action.saved?.folders
+            .map((folder) => folder.id)
+            .filter((id) =>
+              action.folders.some((folder) => folder.id === id),
+            ) ?? [],
+      };
+    case 'ai-start':
+      return { ...state, aiComplete: false };
+    case 'title':
       return {
         ...state,
-        currentTab: {
-          title: savedTab ? savedTab.bookmark.title : tabPreview.title,
-          folders: savedTab ? savedTab.folders : [],
-          preview: tabPreview,
-          savedTab,
-        },
+        title: action.value,
+        suggestedFolderIds: [],
+        selectedFolderIds: state.selectedFolderIds.filter(
+          (id) => !state.autoSelectedFolderIds.includes(id),
+        ),
+        autoSelectedFolderIds: [],
+        aiComplete: false,
+        selectionRevision: state.selectionRevision + 1,
       };
-    }
-    case ActionType.UpdateTabTitle:
+    case 'save-start':
       return {
         ...state,
-        currentTab: { ...state.currentTab, title: action.payload },
+        saving: true,
+        autoSelectedFolderIds: [],
+        selectionRevision: state.selectionRevision + 1,
       };
-    case ActionType.UpdateAiProgress:
+    case 'save-success':
+      return { ...state, saved: true };
+    case 'save-end':
+      return { ...state, saving: false };
+    case 'select':
       return {
         ...state,
-        aiProgress: action.payload,
+        selectedFolderIds: [...new Set(action.ids)].filter((id) =>
+          state.folders.some((folder) => folder.id === id),
+        ),
+        autoSelectedFolderIds: state.autoSelectedFolderIds.filter((id) =>
+          action.ids.includes(id),
+        ),
+        selectionRevision: state.selectionRevision + 1,
       };
-    case ActionType.SetFolders: {
-      const { foldersById, foldersByTitle, selectedFolderIds, allFolderIds } =
-        action.payload.reduce(
-          (result, folder) => ({
-            ...result,
-            foldersById: { ...result.foldersById, [folder.id]: folder },
-            foldersByTitle: {
-              ...result.foldersByTitle,
-              [folder.title]: folder,
-            },
-            allFolderIds: [...result.allFolderIds, folder.id],
-          }),
-          {
-            allFolderIds: [],
-            foldersById: {},
-            foldersByTitle: {},
-            selectedFolderIds: [],
-          } as {
-            allFolderIds: State['allFolderIds'];
-            foldersById: State['foldersById'];
-            foldersByTitle: State['foldersByTitle'];
-            selectedFolderIds: State['selectedFolderIds'];
-          },
-        );
-
-      return {
-        ...state,
-        foldersById,
-        foldersByTitle,
-        selectedFolderIds,
-        allFolderIds,
-      };
-    }
-    case ActionType.SelectFolders:
-      return {
-        ...state,
-        selectedFolderIds: action.payload,
-      };
-    case ActionType.SetAiCapabilities:
-      return {
-        ...state,
-        aiCapabilities: action.payload,
-      };
-    case ActionType.SetAiSuggestion: {
-      const aiResponse = action.payload;
-
-      if (!aiResponse) {
-        return {
-          ...state,
-          aiResponse,
-          suggestedFolderIds: [],
-        };
-      }
-
-      const folderTitles = aiResponse.split(',').map((title) => title.trim());
-
-      const suggestedFolderIds = Array.from(
-        new Set([
-          ...state.suggestedFolderIds,
-          ...folderTitles
-            .filter((title) => state.foldersByTitle[title])
-            .map((title) => state.foldersByTitle[title].id),
-        ]),
+    case 'suggest': {
+      if (action.title !== state.title) return state;
+      const ids = [...new Set(action.ids)].filter((id) =>
+        state.folders.some((folder) => folder.id === id),
       );
-
-      const selectedFolderIds = Array.from(
-        new Set([...suggestedFolderIds, ...state.selectedFolderIds]),
+      const retainedIds = state.selectedFolderIds.filter(
+        (id) => !state.autoSelectedFolderIds.includes(id),
       );
-
       return {
         ...state,
-        aiResponse,
-        suggestedFolderIds,
-        selectedFolderIds,
+        aiComplete: true,
+        suggestedFolderIds: ids,
+        autoSelectedFolderIds:
+          action.revision === state.selectionRevision
+            ? ids.filter((id) => !retainedIds.includes(id))
+            : state.autoSelectedFolderIds,
+        selectedFolderIds:
+          action.revision === state.selectionRevision
+            ? [...new Set([...retainedIds, ...ids])]
+            : state.selectedFolderIds,
       };
     }
-    default:
-      throw new Error('Unknown action');
   }
 }
