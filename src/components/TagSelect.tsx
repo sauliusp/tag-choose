@@ -59,6 +59,19 @@ export const TagSelect = ({ disabled = false }: { disabled?: boolean }) => {
       suggest();
     }
   }, [status.phase, state.folders.length]);
+  const folderLabel = (id: string) => {
+    const folder = state.folders.find((candidate) => candidate.id === id);
+    const path = folder?.path ?? folder?.title ?? id;
+    const duplicates = state.folders.filter(
+      (candidate) => (candidate.path ?? candidate.title) === path,
+    );
+    return duplicates.length > 1
+      ? `${path} (duplicate ${duplicates.findIndex((candidate) => candidate.id === id) + 1} of ${duplicates.length})`
+      : path;
+  };
+  const additionalSuggestions = state.suggestedFolderIds.filter(
+    (id) => !state.selectedFolderIds.includes(id),
+  );
   const busy =
     ['checking', 'waiting', 'preparing', 'suggesting'].includes(status.phase) ||
     (status.phase === 'downloading' && status.progress !== null);
@@ -86,7 +99,7 @@ export const TagSelect = ({ disabled = false }: { disabled?: boolean }) => {
                       : status.phase === 'downloading'
                         ? `Downloading the model: ${Math.round((status.progress ?? 0) * 100)}%`
                         : status.phase === 'preparing'
-                          ? 'Chrome is preparing the model. Download completion is not readiness yet.'
+                          ? 'Chrome is preparing the local model. Wait for suggestions, or choose folders manually.'
                           : status.phase === 'suggesting'
                             ? 'AI is choosing folders for this page…'
                             : status.message || 'Local AI is ready.'}
@@ -150,27 +163,41 @@ export const TagSelect = ({ disabled = false }: { disabled?: boolean }) => {
           works during setup or if AI is unavailable.
         </Typography>
       </Box>
+      {status.phase === 'complete' && additionalSuggestions.length > 0 && (
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            AI also suggested these folders. Add any that fit:
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            {additionalSuggestions.map((id) => (
+              <Chip
+                key={id}
+                label={`+ ${folderLabel(id)}`}
+                disabled={disabled}
+                onClick={() =>
+                  dispatch({
+                    type: 'select',
+                    ids: [...state.selectedFolderIds, id],
+                  })
+                }
+              />
+            ))}
+          </Box>
+        </Box>
+      )}
       <Autocomplete
         multiple
         disabled={disabled}
         options={state.folders.map((folder) => folder.id)}
         value={state.selectedFolderIds}
-        getOptionLabel={(id) =>
-          state.folders.find((folder) => folder.id === id)?.path ?? id
-        }
+        getOptionKey={(id) => id}
+        getOptionLabel={folderLabel}
         onChange={(_, ids) => dispatch({ type: 'select', ids })}
         renderTags={(ids, getTagProps) =>
           ids.map((id, index) => {
             const { key, ...props } = getTagProps({ index });
             return (
-              <Chip
-                {...props}
-                key={key}
-                label={
-                  state.folders.find((folder) => folder.id === id)?.path ?? id
-                }
-                size="small"
-              />
+              <Chip {...props} key={key} label={folderLabel(id)} size="small" />
             );
           })
         }
@@ -178,7 +205,7 @@ export const TagSelect = ({ disabled = false }: { disabled?: boolean }) => {
           <TextField
             {...params}
             label="Review bookmark folders"
-            placeholder="Search to adjust AI suggestions"
+            placeholder="Search your bookmark folders"
             helperText={
               state.aiComplete
                 ? 'Keep or change the AI choices. Full paths distinguish matching names.'

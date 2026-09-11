@@ -37,6 +37,7 @@ export class AiFlow {
     private service: AiService = aiService,
     private stallMs = 20000,
     private inferenceMs = 45000,
+    private checkMs = 10000,
   ) {}
   subscribe(listener: (state: AiState) => void) {
     this.listeners.add(listener);
@@ -51,16 +52,28 @@ export class AiFlow {
   async check() {
     const generation = ++this.generation;
     this.set({ ...initialAiState });
+    let timeout: ReturnType<typeof setTimeout> | undefined;
     try {
-      const result = await this.service.getAiCapabilities();
+      const result = await Promise.race([
+        this.service.getAiCapabilities(),
+        new Promise<never>((_, reject) => {
+          timeout = setTimeout(
+            () => reject(new Error('Availability check timed out')),
+            this.checkMs,
+          );
+        }),
+      ]);
       if (generation === this.generation)
         this.set({ phase: result === 'available' ? 'ready' : result });
     } catch {
       if (generation === this.generation)
         this.set({
           phase: 'error',
-          message: 'Could not check local AI. Retry the compatibility check.',
+          message:
+            'Chrome did not confirm local AI availability. Retry the compatibility check, or choose folders manually.',
         });
+    } finally {
+      clearTimeout(timeout);
     }
   }
   private watchProgress() {
@@ -98,10 +111,20 @@ export class AiFlow {
     try {
       await Promise.race([
         this.service.getSession((progress) => {
-          if (generation !== this.generation) return;
+          if (
+            generation !== this.generation ||
+            controller.signal.aborted ||
+            this.controller !== controller
+          )
+            return;
           this.set({
             progress,
-            phase: progress < 1 ? 'downloading' : 'preparing',
+            phase:
+              availability === 'ready' ||
+              availability === 'complete' ||
+              progress >= 1
+                ? 'preparing'
+                : 'downloading',
             stalled: false,
           });
           this.watchProgress();

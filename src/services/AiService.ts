@@ -70,11 +70,7 @@ export class AiService {
   async getAiCapabilities(): Promise<AiAvailability> {
     const api = model();
     if (!api) return 'unavailable';
-    try {
-      return await api.availability(options);
-    } catch {
-      return 'unavailable';
-    }
+    return api.availability(options);
   }
   async getSession(
     progress?: DownloadProgressCallback,

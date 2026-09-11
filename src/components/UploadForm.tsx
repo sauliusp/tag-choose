@@ -40,10 +40,14 @@ export const UploadForm = () => {
       active = false;
     };
   }, [dispatch]);
+  useEffect(() => {
+    setSuccess('');
+  }, [state.selectedFolderIds, state.title]);
   const save = async (event: React.FormEvent) => {
     event.preventDefault();
     if (inFlight.current || !state.loaded) return;
     inFlight.current = true;
+    dispatch({ type: 'save-start' });
     setSaving(true);
     setError('');
     setSuccess('');

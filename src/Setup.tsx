@@ -34,7 +34,7 @@ function Setup() {
               : state.phase === 'downloading'
                 ? `Downloading the model · ${Math.round((state.progress ?? 0) * 100)}%`
                 : state.phase === 'preparing'
-                  ? 'Download complete. Preparing the model…'
+                  ? 'Preparing the local model…'
                   : ready
                     ? 'Your local AI is ready'
                     : state.phase === 'cancelled'
@@ -109,7 +109,7 @@ function Setup() {
               {state.phase === 'waiting'
                 ? 'No download progress has been reported yet. Waiting does not mean data is already transferring.'
                 : state.phase === 'preparing'
-                  ? 'The download is finished, but Chrome is still preparing the model. Wait for the ready confirmation.'
+                  ? 'Chrome is preparing its local model. Wait for the ready confirmation.'
                   : 'This percentage comes from Chrome’s download events.'}
             </p>
             <progress

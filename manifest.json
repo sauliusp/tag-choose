@@ -2,8 +2,11 @@
   "manifest_version": 3,
   "name": "#TagChoose - Bookmark Manager with client-side AI",
   "version": "2.0.0",
-  "description": "AI suggests the right Chrome bookmark folders. Review, adjust and save a page in multiple places. Requires on-device AI setup.",
-  "permissions": ["bookmarks", "tabs"],
+  "description": "Chrome local AI suggests bookmark folders. Review and save in several places, or choose folders manually without AI.",
+  "permissions": [
+    "bookmarks",
+    "tabs"
+  ],
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxdRZwDqnFlEWGiI4Ojcqy6oRD2iqSL3P8xVIbd078Y7T3VtvUN6KELL6M06Mw3vYWJVPyr81ZuW/D1v5fP6aAD5QZczhgVzRii5mgMQEPHKjfGiOYeoV3iFqexVjZ3XYCNzbg4YH4fpy07ndELocvwyWeHxmNbkpVFRdJXMYmKYw0ztmIwyRaVfCdnQdOubvuQZTCZ0hJJuevlEXQghAV3M8ql8MK4Rqw0ujEMz/gyOhcFKiCpiNrE9LmCHbQtp9VtaSJUbpPC8nLsK7BHscx9YaWZk4U8srag3a9UlALGKuc2KcY4C6VTzfYzIkZoD+fBUsrCH8+ovL1hAnuzmbLQIDAQAB",
   "minimum_chrome_version": "138",
   "action": {

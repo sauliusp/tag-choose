@@ -191,3 +191,39 @@ test('reopening does a fresh availability check instead of restoring a stale rea
   assert.equal(reopened.state.phase, 'downloadable');
   reopened.dispose();
 });
+test('a stuck availability check ends without misreporting unsupported hardware', async () => {
+  const service = new ControlledAi();
+  service.getAiCapabilities = () => new Promise(() => {});
+  const flow = new AiFlow(service, 20, 20, 5);
+  await flow.check();
+  assert.equal(flow.state.phase, 'error');
+  assert.match(flow.state.message, /did not confirm/);
+  assert.equal(service.creates, 0);
+  flow.dispose();
+});
+test('ready model initialization events do not pretend a new download is required', async () => {
+  const service = new ControlledAi();
+  service.availability = 'available';
+  const flow = new AiFlow(service);
+  await flow.check();
+  const pending = flow.run();
+  service.progress?.(0);
+  assert.equal(flow.state.phase, 'preparing');
+  service.ready();
+  await pending;
+  assert.equal(flow.state.phase, 'ready');
+  flow.dispose();
+});
+test('queued progress cannot resurrect a cancelled download or its stall timer', async () => {
+  const service = new ControlledAi();
+  const flow = new AiFlow(service, 5);
+  await flow.check();
+  const pending = flow.run();
+  flow.cancel();
+  await pending;
+  service.progress?.(0.9);
+  await new Promise((resolve) => setTimeout(resolve, 12));
+  assert.equal(flow.state.phase, 'cancelled');
+  assert.equal(flow.state.stalled, false);
+  flow.dispose();
+});

@@ -31,6 +31,7 @@ export type Action =
       saved: SavedTab | null;
     }
   | { type: 'ai-start' }
+  | { type: 'save-start' }
   | { type: 'title'; value: string }
   | { type: 'select'; ids: string[] }
   | { type: 'suggest'; ids: string[]; revision: number };
@@ -54,7 +55,13 @@ export function reducer(state: State, action: Action): State {
     case 'ai-start':
       return { ...state, aiComplete: false };
     case 'title':
-      return { ...state, title: action.value };
+      return {
+        ...state,
+        title: action.value,
+        selectionRevision: state.selectionRevision + 1,
+      };
+    case 'save-start':
+      return { ...state, selectionRevision: state.selectionRevision + 1 };
     case 'select':
       return {
         ...state,

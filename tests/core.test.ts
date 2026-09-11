@@ -229,7 +229,7 @@ test('AI JSON supports comma-bearing and duplicate folder names by exact ID', ()
     assert.throws(() => parseFolderIds(bad, ['c']));
   assert.deepEqual(parseFolderIds('[]', ['c']), []);
 });
-test('missing or throwing AI API reports unavailable without rejecting', async () => {
+test('missing API is unavailable; failed availability remains an unknown error', async () => {
   assert.equal(await new AiService().getAiCapabilities(), 'unavailable');
   Object.assign(globalThis, {
     LanguageModel: {
@@ -238,7 +238,7 @@ test('missing or throwing AI API reports unavailable without rejecting', async (
       },
     },
   });
-  assert.equal(await new AiService().getAiCapabilities(), 'unavailable');
+  await assert.rejects(new AiService().getAiCapabilities(), /No model/);
 });
 test('create uses explicit languages, forwards download progress, retains setup session, and destroys after inference', async () => {
   let creates = 0,
@@ -351,4 +351,44 @@ test('tabs use URL for absent titles and never request remote favicon images', a
     title: 'https://example.com',
     faviconUrl: '',
   });
+});
+test('editing a prompt title or starting a save invalidates automatic application of an earlier AI response', () => {
+  const initial = {
+    ...INITIAL_STATE,
+    folders: [
+      { id: 'a', title: 'Research' },
+      { id: 'b', title: 'Design' },
+    ],
+    selectedFolderIds: ['a'],
+  };
+  for (const action of [
+    { type: 'title', value: 'New subject' },
+    { type: 'save-start' },
+  ] as const) {
+    const changed = reducer(initial, action);
+    const result = reducer(changed, {
+      type: 'suggest',
+      ids: ['b'],
+      revision: initial.selectionRevision,
+    });
+    assert.deepEqual(result.selectedFolderIds, ['a']);
+    assert.deepEqual(result.suggestedFolderIds, ['b']);
+  }
+});
+test('duplicate bookmarks in one folder remain intact and count as one destination', async () => {
+  mockBookmarks();
+  nodes.push({
+    id: 'duplicate',
+    title: 'Older duplicate',
+    url: 'https://example.com/',
+    parentId: 'a',
+  });
+  const result = await new BookmarkService().upsertBookmarkInMultipleFolders(
+    ['a'],
+    'Updated',
+    'https://example.com/',
+  );
+  assert.deepEqual(result, { updated: 1, created: 0 });
+  assert.equal(nodes.filter((node) => node.parentId === 'a').length, 2);
+  assert.equal(nodes.find((node) => node.id === 'duplicate')?.title, 'Updated');
 });

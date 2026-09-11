@@ -59,11 +59,12 @@ export class BookmarkService {
       try {
         if (existing.length) {
           for (const bookmark of existing) {
-            if (bookmark.unmodifiable) continue;
+            if (bookmark.unmodifiable)
+              throw new Error('This bookmark is read-only');
             if (bookmark.title !== title)
               await chrome.bookmarks.update(bookmark.id, { title });
-            result.updated++;
           }
+          result.updated++;
         } else {
           await chrome.bookmarks.create({ parentId, title, url });
           result.created++;
