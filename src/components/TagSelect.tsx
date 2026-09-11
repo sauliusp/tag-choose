@@ -103,6 +103,8 @@ export const TagSelect = ({ disabled = false }: { disabled?: boolean }) => {
                           ? 'Chrome is preparing the local model. Wait for suggestions, or choose folders manually.'
                           : status.phase === 'suggesting'
                             ? 'AI is choosing folders for this page…'
+                            : status.phase === 'complete' && !state.aiComplete
+                              ? 'The title changed. Choose Suggest again for updated AI suggestions, or select folders manually.'
                             : status.message || 'Local AI is ready.'}
           </Typography>
           {busy && (

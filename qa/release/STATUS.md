@@ -34,4 +34,4 @@ Updated September 11, 2026. Do not treat local validation or a pending review as
 ## Store
 - Initial public version: 1.1.0, updated August 19, 2025; six ratings, 3.7 average.
 - Reviews: man osm (December 31, 2025) reported broken automatic suggestions; Eric Hanchrow (July 17, 2025) reported indefinite download waiting. Existing July 18 reply remains.
-- Google requires a passkey confirmation to reopen the Store dashboard. User has been asked to complete it. Version 2.0.0 has not yet been submitted. No new review replies posted. Reply only after actual public 2.0.0 publication.
+- Google reauthentication completed. The 2.0.0 ZIP was accepted into a draft and the revised listing, video, official homepage/support/privacy URLs and reviewer instructions were saved. It has NOT been submitted for Chrome review. The Store reports unreachable homepage/support URLs while domain registration and DNS are pending. Per the user, finish the Codex review loop first, rebuild and verify the final package, then replace the staged ZIP before submission. No new review replies posted. Reply only after actual public 2.0.0 publication.
