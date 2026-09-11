@@ -1,67 +1,36 @@
 import React from 'react';
-import { Link, Box, Toolbar, AppBar } from '@mui/material';
-import logo from '../../public/logo.svg';
+import { Box, Link, Typography } from '@mui/material';
 import { URLs } from '../parameters';
-import { PromoLink } from '../types/PromoLink';
-
-const links: PromoLink[] = [
-  {
-    label: 'AI download taking long?',
-    href: URLs.aiInitialDownload,
-  },
-  {
-    label: 'AI features are not available?',
-    href: URLs.aiNotAvailable,
-  },
-  {
-    label: 'Visit website',
-    href: URLs.about,
-  },
-];
-
-export const Header: React.FC = () => {
-  return (
-    <AppBar color="transparent" position="static" role="header">
-      <Toolbar>
-        <Box
-          sx={{
-            display: 'flex',
-            gap: 2,
-            justifyContent: 'end',
-            flexGrow: 1,
-            alignItems: 'center',
-          }}
-        >
-          <Link
-            sx={{ mr: 'auto' }}
-            href="https://tagchoose.site"
-            target="_blank"
-            underline="none"
-            aria-label="TagChoose Website"
-          >
-            <img
-              src={logo}
-              width={150}
-              title="TagChoose Logo"
-              alt="TagChoose Logo"
-            />
-          </Link>
-
-          {links.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={link.label}
-              color="text.secondary"
-              underline="hover"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </Box>
-      </Toolbar>
-    </AppBar>
-  );
-};
+export const Header = () => (
+  <Box
+    component="header"
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      px: 3,
+      py: 2,
+      borderBottom: '1px solid #e6ddcc',
+    }}
+  >
+    <Link
+      href={URLs.website}
+      target="_blank"
+      rel="noreferrer"
+      aria-label="TagChoose website"
+    >
+      <Typography
+        component="span"
+        sx={{
+          fontWeight: 800,
+          fontSize: 23,
+          letterSpacing: -1,
+          color: '#302b24',
+        }}
+      >
+        #TagChoose.
+      </Typography>
+    </Link>
+    <Typography variant="caption">BOOKMARKS, YOUR WAY</Typography>
+  </Box>
+);

@@ -1,1 +1,1 @@
-export type Folder = chrome.bookmarks.BookmarkTreeNode;
+export type Folder = chrome.bookmarks.BookmarkTreeNode & { path?: string };

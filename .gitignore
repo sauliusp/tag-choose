@@ -20,3 +20,6 @@ Thumbs.db
 
 # Dist
 dist.zip
+release/*.zip
+website/node_modules/
+website/dist/

@@ -1,5 +1,2 @@
-export type PromptPayload = {
-  url: string;
-  title: string;
-  folderListString: string;
-};
+import { Folder } from './Folder';
+export type PromptPayload = { url: string; title: string; folders: Folder[] };

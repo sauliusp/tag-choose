@@ -1,14 +1,14 @@
 {
   "name": "#TagChoose",
-  "version": "1.0.0",
-  "description": "#TagChoose categorizes your bookmarks with offline AI using Gemini Nano LLM within your browser via experimental PROMPT API",
+  "version": "2.0.0",
+  "description": "Chrome local AI suggests bookmark folders. Review, adjust and save; manual selection remains available.",
   "author": {
     "name": "Saulius Petreikis",
     "email": "sauliuspetr@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sauliusp/TagChoose.git"
+    "url": "https://github.com/sauliusp/bookmark-ai-autotagger.git"
   },
   "keywords": [
     "chrome-extension",
@@ -25,20 +25,22 @@
     "multi-folder",
     "quick-access"
   ],
-  "homepage": "https://github.com/sauliusp/TagChoose#readme",
+  "homepage": "https://tagchoose.site/",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sauliusp/TagChoose/issues",
+    "url": "https://github.com/sauliusp/bookmark-ai-autotagger/issues",
     "email": "sauliuspetr@gmail.com"
   },
   "scripts": {
     "dev": "parcel watch src/background/background.ts src/index.tsx --no-cache --no-hmr",
-    "build": "parcel build src/background/background.ts src/index.tsx --no-cache && npm run copy",
+    "build": "node scripts/build.mjs",
     "copy": "cp -r public dist && cp manifest.json dist && cp popup.html dist && cp reset.css dist",
-    "lint": "eslint",
+    "lint": "eslint src tests scripts",
     "fix": "eslint --fix",
-    "zip": "rm -rf dist.zip && node scripts/remove-key.js && zip -r dist.zip dist && npm run build",
-    "prepare": "husky"
+    "zip": "npm run build && node scripts/package.mjs",
+    "prepare": "husky",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
@@ -55,6 +57,7 @@
     "@parcel/transformer-typescript-tsc": "^2.11.0",
     "@types/chrome": "^0.0.332",
     "@types/dom-chromium-ai": "^0.0.9",
+    "@types/node": "^22.20.2",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "buffer": "^6.0.3",
@@ -70,6 +73,7 @@
     "process": "^0.11.10",
     "stream-http": "^3.2.0",
     "svgo": "^3.3.2",
+    "tsx": "^4.23.13",
     "typescript": "^5.3.0",
     "typescript-eslint": "^8.14.0",
     "url": "^0.11.4"

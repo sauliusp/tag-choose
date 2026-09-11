@@ -13,7 +13,7 @@ import './popup.css';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#faa916',
+      main: '#865300',
     },
     secondary: {
       main: '#160f29',

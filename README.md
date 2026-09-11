@@ -1,170 +1,39 @@
-# **TagChoose** - AI-Powered Bookmark Categorizer
+# TagChoose
 
-TagChoose Website: https://tagchoose.site
+TagChoose suggests Chrome bookmark folders using Chrome’s on-device AI. Review or adjust the suggestions, then save a page in multiple folders. Manual folder selection works while the model downloads, on unsupported devices and after an AI error. There is no cloud AI or algorithmic automatic fallback.
 
-TagChoose Chrome Extension: https://chromewebstore.google.com/detail/tagchoose-bookmark-manage/hlfgdfpeekcelanebbfchnnneijhophh
+- Website: https://tagchoose.site/
+- Chrome Web Store: https://chromewebstore.google.com/detail/tagchoose-bookmark-manage/hlfgdfpeekcelanebbfchnnneijhophh
+- Feedback: https://tagchoose.featurebase.app/
 
-_TagChoose_ is a Chrome extension that leverages the [Prompt API in Extensions](https://developer.chrome.com/docs/extensions/ai/prompt-api) to intelligently suggest and organize bookmarks into relevant folders.
+## Development
 
-For detailed information, see the [Product Specification](PRODUCT_SPEC.md).
+Use Node 22 or later, desktop Chrome 138 or later, and npm.
 
----
-
-## **Features**
-
-- 🤖 **AI-Powered Tag Suggestions**: Uses [Google AI's Prompt API](https://developer.chrome.com/docs/extensions/ai/prompt-api) to intelligently suggest tags for bookmarks based on their content.
-
-- 📂 **Tag-Based Folder Sync**: Each tag corresponds to a folder in your bookmarks bar, ensuring bookmarks are accessible in multiple relevant locations.
-
-- ⚡ **Quick Bookmark Saving**: Save the current tab with minimal clicks using a streamlined pop-up interface, keyboard shortcuts, and tab-only navigation.
-
-- 📝 **Manual and Auto Tagging**: Add tags manually or select from AI-suggested options, with an intuitive autocomplete feature.
-
-- 🔄 **Multi-Folder Placement**: Assign bookmarks to multiple folders simultaneously for cross-categorization.
-
-- 🛠️ **No Backend Needed**: The AI works directly within the extension, ensuring data privacy and seamless functionality without relying on external servers.
-
----
-
-## **Installation**
-
-### **Local Development**
-
-1. **Clone the Repository**:
-
-   ```bash
-   git clone https://github.com/sauliusp/TagChoose.git
-   cd tagchoose
-   ```
-
-2. **Install Dependencies**:
-
-   ```bash
-   npm install
-   ```
-
-3. **Build the Extension**:
-
-   ```bash
-   npm run build
-   ```
-
-4. **Load the Extension in Chrome**:
-   - Download the latest [Chrome Canary](https://www.google.com/chrome/canary/) in order to be able to experiment with the latest AI features.
-   - Make sure you have these Chrome flags adjusted accordingly:
-     - `chrome://flags/#optimization-guide-on-device-model` should be set to `Enabled BypassPerfRequirement`
-     - `chrome://flags/#prompt-api-for-gemini-nano` should be `Enabled`
-     - `chrome://flags/#text-safety-classifier` should be `Disabled`
-   - Relaunch Chrome.
-   - Navigate to `chrome://extensions/` in Chrome.
-   - Enable **Developer mode** in the top-right corner.
-   - Click **Load unpacked** and select the `dist` directory.
-
----
-
-## **Development**
-
-### **Prerequisites**
-
-- **Desktop Platform Requirements**: see [here](https://docs.google.com/document/d/1VG8HIyz361zGduWgNG7R_R8Xkv0OOJ8b5C9QKeCjU0c/edit?tab=t.0#heading=h.cwc2ewfrtynq) under `Requirements` section
-- **Node.js**: Version 16 or higher
-- **Chrome Browser**: Version 131 or higher
-
-### **Available Scripts**
-
-- `npm run dev` - Starts development mode with live reloading.
-- `npm run build` - Creates a production-ready build.
-- `npm run lint` - Runs ESLint to check for code quality issues.
-- `npm run fix` - Automatically fixes linting issues.
-
----
-
-## **How It Works**
-
-1. **Save a Bookmark**
-
-   - Open the popup by clicking the extension icon or using the keyboard shortcut `Ctrl+Shift+Y` (on Mac: `Command+Shift+Y`), or customize the shortcut in `chrome://extensions/shortcuts`.
-
-   - Add tags through autocomplete or select from AI-suggested options.
-
-2. **AI-Driven Auto-Tagging**
-
-   - AI suggests tags based on the current tab's URL and page title, leveraging [Google AI's Prompt API](https://developer.chrome.com/docs/extensions/ai/prompt-api).
-
-3. **Folder-Tag Sync**
-   - Tags are represented as folders in your bookmarks bar, ensuring seamless organization.
-
----
-
-## **Project Structure**
-
-```plaintext
-src/
-├── background/  # Chrome extension background scripts
-├── components/  # React components
-├── services/    # Core services (AI, Bookmarks, etc.)
-├── types/       # TypeScript type definitions
-└── store/       # Application state management
+```sh
+npm ci
+npm test
+npm run typecheck
+npm run lint
+npm run build
 ```
 
----
+Load `dist` through Chrome Extensions > Developer mode > Load unpacked. The production build removes the development public key. No origin trial or unsafe flag changes are required. AI availability depends on Chrome’s current hardware, storage, network and policy requirements, documented at https://developer.chrome.com/docs/ai/prompt-api.
 
-## **Technical Details**
+The popup opens the active page. First-time users can open a separate setup tab, inspect requirements, explicitly start the model download, watch actual progress, cancel and retry. `100% downloaded` is separate from a ready model. Returning users get AI suggestions automatically when Chrome reports readiness. They remain free to select folders manually.
 
-### **Built With**
+## Saving contract
 
-- **React 18**: For modern, declarative UIs.
-- **TypeScript**: Ensures type safety and scalability.
-- **Material-UI**: Provides a polished and professional interface.
-- **Chrome Extensions API**: Facilitates integration with Chrome's bookmark system.
-- **Google AI Prompt API**: Powers intelligent tag suggestions.
+Selected writable folders receive a copy or an updated title for an exact URL match. Other copies are never removed. Full paths distinguish folders with the same name. A partial Chrome API failure is surfaced; retrying avoids new duplicate copies in already-saved destinations. Folders are created and managed through Chrome.
 
----
+## Release
 
-## **Key Components**
+`npm run zip` builds a clean package and creates `release/tagchoose-2.0.0-chrome.zip` with `manifest.json` at the archive root. `qa/release/STATUS.md` tracks local QA, browser QA, review, website/video, Store submission and public publication separately. A successful build is not a published release.
 
-- **AiService**: Manages AI-powered tag recommendations.
-- **BookmarkService**: Handles bookmark creation, retrieval, and categorization.
-- **TagSelect.tsx**: Provides a user-friendly interface for selecting and adding tags.
+## Website and video
 
----
+`website` contains the Sites project, including product help and bookmark guides. The source is mirrored to the Sites repository when deployed. `marketing` contains the existing Store screenshots, their provenance and the new narration/rendering sources. The private voice reference remains outside this repository.
 
-## **Contributing**
+## Privacy
 
-1. Fork the repository.
-2. Create a feature branch:
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-3. Commit your changes:
-   ```bash
-   git commit -m "Add some amazing feature"
-   ```
-4. Push to the branch:
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-5. Open a Pull Request.
-
-### **Code Style**
-
-This project enforces:
-
-- **ESLint**: For consistent code quality.
-- **Prettier**: For automatic code formatting.
-- **Husky**: Pre-commit hooks to maintain standards.
-
-Configuration files are included in the root directory.
-
----
-
-## **License**
-
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE.md) file for details.
-
----
-
-## **Contact**
-
-- For bug reports and feature requests, please [open an issue](https://github.com/sauliusp/TagChoose/issues).
-- For general inquiries, contact **sauliuspetr@gmail.com**.
+The extension requests bookmarks and tabs permissions. There are no content scripts, host permissions, remote model calls, analytics or tracking pixels. Chrome owns bookmark storage and any browser sync configured by the user. AI inputs are page title, URL and folder names, not full page content.
