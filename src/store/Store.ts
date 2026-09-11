@@ -9,7 +9,9 @@ export interface State {
   url: string;
   selectedFolderIds: string[];
   suggestedFolderIds: string[];
+  autoSelectedFolderIds: string[];
   saved: boolean;
+  saving: boolean;
   selectionRevision: number;
 }
 export const INITIAL_STATE: State = {
@@ -20,7 +22,9 @@ export const INITIAL_STATE: State = {
   url: '',
   selectedFolderIds: [],
   suggestedFolderIds: [],
+  autoSelectedFolderIds: [],
   saved: false,
+  saving: false,
   selectionRevision: 0,
 };
 export type Action =
@@ -33,6 +37,7 @@ export type Action =
   | { type: 'ai-start' }
   | { type: 'save-start' }
   | { type: 'save-success' }
+  | { type: 'save-end' }
   | { type: 'title'; value: string }
   | { type: 'select'; ids: string[] }
   | { type: 'suggest'; ids: string[]; revision: number; title: string };
@@ -60,18 +65,32 @@ export function reducer(state: State, action: Action): State {
         ...state,
         title: action.value,
         suggestedFolderIds: [],
+        selectedFolderIds: state.selectedFolderIds.filter(
+          (id) => !state.autoSelectedFolderIds.includes(id),
+        ),
+        autoSelectedFolderIds: [],
         aiComplete: false,
         selectionRevision: state.selectionRevision + 1,
       };
     case 'save-start':
-      return { ...state, selectionRevision: state.selectionRevision + 1 };
+      return {
+        ...state,
+        saving: true,
+        autoSelectedFolderIds: [],
+        selectionRevision: state.selectionRevision + 1,
+      };
     case 'save-success':
       return { ...state, saved: true };
+    case 'save-end':
+      return { ...state, saving: false };
     case 'select':
       return {
         ...state,
         selectedFolderIds: [...new Set(action.ids)].filter((id) =>
           state.folders.some((folder) => folder.id === id),
+        ),
+        autoSelectedFolderIds: state.autoSelectedFolderIds.filter((id) =>
+          action.ids.includes(id),
         ),
         selectionRevision: state.selectionRevision + 1,
       };
@@ -84,6 +103,13 @@ export function reducer(state: State, action: Action): State {
         ...state,
         aiComplete: true,
         suggestedFolderIds: ids,
+        autoSelectedFolderIds:
+          action.revision === state.selectionRevision
+            ? [...new Set([
+                ...state.autoSelectedFolderIds,
+                ...ids.filter((id) => !state.selectedFolderIds.includes(id)),
+              ])]
+            : state.autoSelectedFolderIds,
         selectedFolderIds:
           action.revision === state.selectionRevision
             ? [...new Set([...state.selectedFolderIds, ...ids])]

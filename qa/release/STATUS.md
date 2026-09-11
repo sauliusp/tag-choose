@@ -4,9 +4,9 @@ Updated September 11, 2026. Do not treat local validation or a pending review as
 
 ## Code and tests
 - Branch: codex/tagchoose-v2-reliability. PR to main: https://github.com/sauliusp/tag-choose/pull/5.
-- 30 automated tests pass, including first-visit availability without downloads, download/preparing/ready distinction, silence/progress recovery, cancellation with hung native promises, late progress, inference timeout, unavailable vs unknown state, duplicate names, bookmark copy preservation, partial saves, stale title/folder/save races and count accuracy.
+- 34 automated tests pass, including first-visit availability without downloads, download/preparing/ready distinction, silence/progress recovery, cancellation with hung native promises, late progress, inference timeout, unavailable vs unknown state, duplicate names, bookmark copy preservation, partial saves, stale title/folder/save races and count accuracy.
 - TypeScript and ESLint pass. Build and root-level Chrome ZIP integrity pass. Manifest and package are 2.0.0. Requested permissions remain bookmarks and tabs.
-- First Codex review raised five P2 findings. The next review raised two more findings about stale title suggestions and successful-save state. All seven were addressed; another review was requested at commit 74f67d1.
+- The first four Codex reviews raised ten findings in total. Fixes cover title invalidation, late progress, duplicate names, addable suggestions, saved-state feedback, stale automatic selections and navigation during saves. All are addressed in the working branch; a new review is required before merging. The required order remains clean review, merge to main, fresh package from main, then Store submission.
 
 ## Real Chrome evidence
 - Installed unpacked 2.0.0 in a newly created, signed-out TagChoose QA profile.
@@ -16,6 +16,8 @@ Updated September 11, 2026. Do not treat local validation or a pending review as
 - Reopened popup and confirmed both existing destinations restored before inference completed.
 - Existing model initialization emits 0-percent progress too; fixed the UI to show preparing when availability had already been ready.
 - Reloaded the latest post-review build in Chrome. Confirmed preparing rather than downloading for an existing model, restored saved folders and actual inference selecting Web development. The no-model lifecycle is covered with controlled API tests, not a claimed real first-download run.
+
+- September 11 follow-up: latest unpacked build completed actual inference and added Web development. Editing the title removed that automatic destination, kept the two saved destinations, and replaced the stale ready banner with an instruction to request updated suggestions. Closed without saving the test title.
 
 ## Website and media
 - Sites public publication succeeded on the provider host; official public address: https://tagchoose.site (DNS connection pending).

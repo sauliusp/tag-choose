@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Link, Typography } from '@mui/material';
 import { URLs } from '../parameters';
-export const Header = () => (
+export const Header = ({ disabled = false }: { disabled?: boolean }) => (
   <Box
     component="header"
     sx={{
@@ -14,7 +14,9 @@ export const Header = () => (
     }}
   >
     <Link
-      href={URLs.website}
+      href={disabled ? undefined : URLs.website}
+      aria-disabled={disabled}
+      tabIndex={disabled ? -1 : undefined}
       target="_blank"
       rel="noreferrer"
       aria-label="TagChoose website"

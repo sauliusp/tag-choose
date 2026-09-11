@@ -400,3 +400,32 @@ test('duplicate bookmarks in one folder remain intact and count as one destinati
   assert.equal(nodes.filter((node) => node.parentId === 'a').length, 2);
   assert.equal(nodes.find((node) => node.id === 'duplicate')?.title, 'Updated');
 });
+test('changing the title discards only automatically selected folders before the next suggestion', () => {
+  const start = {
+    ...INITIAL_STATE,
+    title: 'Research',
+    folders: ['manual', 'old', 'new'].map((id) => ({ id, title: id })),
+    selectedFolderIds: ['manual'],
+  };
+  const suggested = reducer(start, { type: 'suggest', title: start.title, revision: 0, ids: ['old', 'manual'] });
+  assert.deepEqual(suggested.autoSelectedFolderIds, ['old']);
+  const edited = reducer(suggested, { type: 'title', value: 'Design' });
+  assert.deepEqual(edited.selectedFolderIds, ['manual']);
+  const refreshed = reducer(edited, { type: 'suggest', title: edited.title, revision: edited.selectionRevision, ids: ['new'] });
+  assert.deepEqual(refreshed.selectedFolderIds, ['manual', 'new']);
+});
+test('removing then manually restoring an AI folder makes it a retained manual choice', () => {
+  const start = { ...INITIAL_STATE, folders: [{ id: 'a', title: 'A' }] };
+  const suggested = reducer(start, { type: 'suggest', title: start.title, revision: 0, ids: ['a'] });
+  const removed = reducer(suggested, { type: 'select', ids: [] });
+  const restored = reducer(removed, { type: 'select', ids: ['a'] });
+  assert.deepEqual(reducer(restored, { type: 'title', value: 'New title' }).selectedFolderIds, ['a']);
+});
+test('save keeps explicitly accepted AI locations and unlocks navigation when the operation ends', () => {
+  const start = { ...INITIAL_STATE, selectedFolderIds: ['a'], autoSelectedFolderIds: ['a'] };
+  const saving = reducer(start, { type: 'save-start' });
+  assert.equal(saving.saving, true);
+  const ended = reducer(saving, { type: 'save-end' });
+  assert.equal(ended.saving, false);
+  assert.deepEqual(reducer(ended, { type: 'title', value: 'Edited after save' }).selectedFolderIds, ['a']);
+});

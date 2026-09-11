@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Link } from '@mui/material';
 import { URLs } from '../parameters';
-export const Footer = () => (
+export const Footer = ({ disabled = false }: { disabled?: boolean }) => (
   <Box
     component="footer"
     sx={{
@@ -22,7 +22,9 @@ export const Footer = () => (
     ].map(([label, url]) => (
       <Link
         key={label}
-        href={url}
+        href={disabled ? undefined : url}
+        aria-disabled={disabled}
+        tabIndex={disabled ? -1 : undefined}
         target="_blank"
         rel="noreferrer"
         color="text.secondary"

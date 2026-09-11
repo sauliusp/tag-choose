@@ -128,6 +128,7 @@ export const TagSelect = ({ disabled = false }: { disabled?: boolean }) => {
             <Button
               size="small"
               variant="contained"
+              disabled={disabled}
               onClick={() =>
                 void chrome.tabs.create({
                   url: chrome.runtime.getURL('setup.html'),
@@ -153,7 +154,9 @@ export const TagSelect = ({ disabled = false }: { disabled?: boolean }) => {
             </Button>
           )}
           <Link
-            href={URLs.aiNotAvailable}
+            href={disabled ? undefined : URLs.aiNotAvailable}
+            aria-disabled={disabled}
+            tabIndex={disabled ? -1 : undefined}
             target="_blank"
             rel="noreferrer"
             sx={{ fontSize: 12, alignSelf: 'center' }}

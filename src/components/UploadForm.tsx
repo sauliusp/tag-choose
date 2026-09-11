@@ -14,7 +14,7 @@ import { TagSelect } from './TagSelect';
 export const UploadForm = () => {
   const { state, dispatch } = useStoreContext();
   const [error, setError] = useState('');
-  const [saving, setSaving] = useState(false);
+  const saving = state.saving;
   const [success, setSuccess] = useState('');
   const inFlight = useRef(false);
   useEffect(() => {
@@ -48,7 +48,6 @@ export const UploadForm = () => {
     if (inFlight.current || !state.loaded) return;
     inFlight.current = true;
     dispatch({ type: 'save-start' });
-    setSaving(true);
     setError('');
     setSuccess('');
     try {
@@ -67,7 +66,7 @@ export const UploadForm = () => {
       );
     } finally {
       inFlight.current = false;
-      setSaving(false);
+      dispatch({ type: 'save-end' });
     }
   };
   return (
