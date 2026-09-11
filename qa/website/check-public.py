@@ -1,7 +1,7 @@
-import subprocess, json, re, concurrent.futures
+import subprocess, json, re, concurrent.futures, os
 from html.parser import HTMLParser
 from urllib.parse import urljoin, urlparse
-BASE='https://tagchoose.sauliusdev.chatgpt.site'
+BASE=os.environ.get('TAGCHOOSE_QA_BASE_URL', 'https://tagchoose.site').rstrip('/')
 class Page(HTMLParser):
  def __init__(self):super().__init__();self.links=[];self.canonical=[];self.h1=0;self.description=None
  def handle_starttag(self,tag,attrs):
@@ -23,6 +23,7 @@ def check(path):
  assert doc.description,(path,'description')
  assert [x.rstrip('/') for x in doc.canonical]==[urljoin('https://tagchoose.site',path).rstrip('/')],(path,doc.canonical)
  assert 'Petreikis' not in body,(path,'full name')
+ assert not re.search(r'https?://[^\s"<>]*chatgpt\.site',body),(path,'hosting address in public page')
  return {'path':path,'status':status,'canonical':doc.canonical[0],'h1':doc.h1,'links':doc.links}
 results=list(concurrent.futures.ThreadPoolExecutor(max_workers=4).map(check,paths))
 for path in sorted(set(l for r in results for l in r['links'] if l and l not in paths)):

@@ -46,6 +46,7 @@ export const TagSelect = ({ disabled = false }: { disabled?: boolean }) => {
             type: 'suggest',
             ids: flow.current.state.ids,
             revision: snapshot.selectionRevision,
+            title: snapshot.title,
           });
       });
   };

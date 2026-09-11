@@ -210,6 +210,7 @@ test('late AI responses preserve manual edits, and suggestion IDs cannot invent 
     type: 'suggest',
     ids: ['a', 'missing'],
     revision: 0,
+    title: start.title,
   });
   assert.deepEqual(late.selectedFolderIds, ['c']);
   assert.deepEqual(late.suggestedFolderIds, ['a']);
@@ -217,6 +218,7 @@ test('late AI responses preserve manual edits, and suggestion IDs cannot invent 
     type: 'suggest',
     ids: ['comma', 'c'],
     revision: 1,
+    title: start.title,
   });
   assert.deepEqual(timely.selectedFolderIds, ['c', 'comma']);
 });
@@ -370,10 +372,16 @@ test('editing a prompt title or starting a save invalidates automatic applicatio
       type: 'suggest',
       ids: ['b'],
       revision: initial.selectionRevision,
+      title: initial.title,
     });
     assert.deepEqual(result.selectedFolderIds, ['a']);
-    assert.deepEqual(result.suggestedFolderIds, ['b']);
+    assert.deepEqual(result.suggestedFolderIds, action.type === 'title' ? [] : ['b']);
   }
+});
+test('a successful first save keeps the page in existing-bookmark mode after edits', () => {
+  const saved = reducer(INITIAL_STATE, { type: 'save-success' });
+  assert.equal(saved.saved, true);
+  assert.equal(reducer(saved, { type: 'title', value: 'Edited' }).saved, true);
 });
 test('duplicate bookmarks in one folder remain intact and count as one destination', async () => {
   mockBookmarks();

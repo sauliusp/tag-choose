@@ -32,9 +32,10 @@ export type Action =
     }
   | { type: 'ai-start' }
   | { type: 'save-start' }
+  | { type: 'save-success' }
   | { type: 'title'; value: string }
   | { type: 'select'; ids: string[] }
-  | { type: 'suggest'; ids: string[]; revision: number };
+  | { type: 'suggest'; ids: string[]; revision: number; title: string };
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'initialize':
@@ -58,10 +59,14 @@ export function reducer(state: State, action: Action): State {
       return {
         ...state,
         title: action.value,
+        suggestedFolderIds: [],
+        aiComplete: false,
         selectionRevision: state.selectionRevision + 1,
       };
     case 'save-start':
       return { ...state, selectionRevision: state.selectionRevision + 1 };
+    case 'save-success':
+      return { ...state, saved: true };
     case 'select':
       return {
         ...state,
@@ -71,6 +76,7 @@ export function reducer(state: State, action: Action): State {
         selectionRevision: state.selectionRevision + 1,
       };
     case 'suggest': {
+      if (action.title !== state.title) return state;
       const ids = [...new Set(action.ids)].filter((id) =>
         state.folders.some((folder) => folder.id === id),
       );

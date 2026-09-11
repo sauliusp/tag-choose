@@ -18,7 +18,7 @@ Updated September 11, 2026. Do not treat local validation or a pending review as
 - Latest post-review build still needs a final installed-browser pass. The no-model lifecycle is covered with controlled API tests, not a claimed real first-download run.
 
 ## Website and media
-- Sites public publication succeeded: https://tagchoose.sauliusdev.chatgpt.site.
+- Sites public publication succeeded on the provider host; official public address: https://tagchoose.site (DNS connection pending).
 - Useful guides, setup help, privacy explanation, canonical metadata, sitemap, robots, SoftwareApplication schema and a captioned 30-second video.
 - The website credits only Saulius. Automatic folder suggestions use Chrome local AI only; manual saving remains available. No automatic rules fallback.
 - YouTube publication confirmed: https://www.youtube.com/watch?v=Rc8u494w-Dc. English captions and custom thumbnail saved. Copyright and Community Guidelines initial checks found no issues.

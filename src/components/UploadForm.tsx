@@ -57,6 +57,7 @@ export const UploadForm = () => {
         state.title,
         state.url,
       );
+      dispatch({ type: 'save-success' });
       setSuccess(
         `Saved in ${result.created + result.updated} folder${result.created + result.updated === 1 ? '' : 's'}. Existing copies are kept.`,
       );
