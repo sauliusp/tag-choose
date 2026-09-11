@@ -4,9 +4,9 @@ Updated September 11, 2026. Do not treat local validation or a pending review as
 
 ## Code and tests
 - Branch: codex/tagchoose-v2-reliability. PR to main: https://github.com/sauliusp/tag-choose/pull/5.
-- 29 automated tests pass, including first-visit availability without downloads, download/preparing/ready distinction, silence/progress recovery, cancellation with hung native promises, late progress, inference timeout, unavailable vs unknown state, duplicate names, bookmark copy preservation, partial saves, stale title/folder/save races and count accuracy.
+- 30 automated tests pass, including first-visit availability without downloads, download/preparing/ready distinction, silence/progress recovery, cancellation with hung native promises, late progress, inference timeout, unavailable vs unknown state, duplicate names, bookmark copy preservation, partial saves, stale title/folder/save races and count accuracy.
 - TypeScript and ESLint pass. Build and root-level Chrome ZIP integrity pass. Manifest and package are 2.0.0. Requested permissions remain bookmarks and tabs.
-- First Codex review raised five P2 findings. All were fixed and a new review was requested at commit 8fc1fef.
+- First Codex review raised five P2 findings. The next review raised two more findings about stale title suggestions and successful-save state. All seven were addressed; another review was requested at commit 74f67d1.
 
 ## Real Chrome evidence
 - Installed unpacked 2.0.0 in a newly created, signed-out TagChoose QA profile.
@@ -15,7 +15,7 @@ Updated September 11, 2026. Do not treat local validation or a pending review as
 - Saved into Bookmarks bar and Other bookmarks, saw completion for two folders, and verified one copy in each through Chrome's own bookmark manager.
 - Reopened popup and confirmed both existing destinations restored before inference completed.
 - Existing model initialization emits 0-percent progress too; fixed the UI to show preparing when availability had already been ready.
-- Latest post-review build still needs a final installed-browser pass. The no-model lifecycle is covered with controlled API tests, not a claimed real first-download run.
+- Reloaded the latest post-review build in Chrome. Confirmed preparing rather than downloading for an existing model, restored saved folders and actual inference selecting Web development. The no-model lifecycle is covered with controlled API tests, not a claimed real first-download run.
 
 ## Website and media
 - Sites public publication succeeded on the provider host; official public address: https://tagchoose.site (DNS connection pending).
@@ -23,7 +23,7 @@ Updated September 11, 2026. Do not treat local validation or a pending review as
 - The website credits only Saulius. Automatic folder suggestions use Chrome local AI only; manual saving remains available. No automatic rules fallback.
 - YouTube publication confirmed: https://www.youtube.com/watch?v=Rc8u494w-Dc. English captions and custom thumbnail saved. Copyright and Community Guidelines initial checks found no issues.
 - Video file is exactly 30.000 seconds according to ffprobe and decodes without errors. YouTube displays a rounded 0:31 duration.
-- Latest website changes add the YouTube link, VideoObject schema and consistent trailing-slash routing; deployment pending.
+- Published website version 2 with the YouTube link, VideoObject schema, consistent trailing-slash routing and updated dependencies. Both dependency audits report zero vulnerabilities. All 12 deployed routes pass HTTP, metadata, canonical, internal-link, sitemap, robots and 404 checks. No public page includes a hosting-provider address or full creator name. YouTube description saved with https://tagchoose.site/.
 
 ## Domain and Search Console
 - Signed-in Namecheap domain and expired-domain lists do not include tagchoose.site. Domain is available for a new registration.
@@ -34,4 +34,4 @@ Updated September 11, 2026. Do not treat local validation or a pending review as
 ## Store
 - Initial public version: 1.1.0, updated August 19, 2025; six ratings, 3.7 average.
 - Reviews: man osm (December 31, 2025) reported broken automatic suggestions; Eric Hanchrow (July 17, 2025) reported indefinite download waiting. Existing July 18 reply remains.
-- Version 2.0.0 has not yet been submitted. No new review replies posted. Reply only after actual public 2.0.0 publication.
+- Google requires a passkey confirmation to reopen the Store dashboard. User has been asked to complete it. Version 2.0.0 has not yet been submitted. No new review replies posted. Reply only after actual public 2.0.0 publication.
