@@ -4,9 +4,9 @@ Updated September 11, 2026. Do not treat local validation or a pending review as
 
 ## Code and tests
 - Branch: codex/tagchoose-v2-reliability. PR to main: https://github.com/sauliusp/tag-choose/pull/5.
-- 34 automated tests pass, including first-visit availability without downloads, download/preparing/ready distinction, silence/progress recovery, cancellation with hung native promises, late progress, inference timeout, unavailable vs unknown state, duplicate names, bookmark copy preservation, partial saves, stale title/folder/save races and count accuracy.
+- 35 automated tests pass, including first-visit availability without downloads, download/preparing/ready distinction, silence/progress recovery, cancellation with hung native promises, late progress, inference timeout, unavailable vs unknown state, duplicate names, bookmark copy preservation, partial saves, stale title/folder/save races and count accuracy.
 - TypeScript and ESLint pass. Build and root-level Chrome ZIP integrity pass. Manifest and package are 2.0.0. Requested permissions remain bookmarks and tabs.
-- The first four Codex reviews raised ten findings in total. Fixes cover title invalidation, late progress, duplicate names, addable suggestions, saved-state feedback, stale automatic selections and navigation during saves. All are addressed in the working branch; a new review is required before merging. The required order remains clean review, merge to main, fresh package from main, then Store submission.
+- The first five Codex reviews raised eleven findings in total. Fixes cover title invalidation, late progress, duplicate names, addable suggestions, saved-state feedback, stale automatic selections, replacement of automatic choices on retry and navigation during saves. All are addressed in the working branch; a new review is required before merging. The required order remains clean review, merge to main, fresh package from main, then Store submission.
 
 ## Real Chrome evidence
 - Installed unpacked 2.0.0 in a newly created, signed-out TagChoose QA profile.

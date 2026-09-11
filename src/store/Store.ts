@@ -99,20 +99,20 @@ export function reducer(state: State, action: Action): State {
       const ids = [...new Set(action.ids)].filter((id) =>
         state.folders.some((folder) => folder.id === id),
       );
+      const retainedIds = state.selectedFolderIds.filter(
+        (id) => !state.autoSelectedFolderIds.includes(id),
+      );
       return {
         ...state,
         aiComplete: true,
         suggestedFolderIds: ids,
         autoSelectedFolderIds:
           action.revision === state.selectionRevision
-            ? [...new Set([
-                ...state.autoSelectedFolderIds,
-                ...ids.filter((id) => !state.selectedFolderIds.includes(id)),
-              ])]
+            ? ids.filter((id) => !retainedIds.includes(id))
             : state.autoSelectedFolderIds,
         selectedFolderIds:
           action.revision === state.selectionRevision
-            ? [...new Set([...state.selectedFolderIds, ...ids])]
+            ? [...new Set([...retainedIds, ...ids])]
             : state.selectedFolderIds,
       };
     }

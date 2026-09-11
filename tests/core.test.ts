@@ -429,3 +429,22 @@ test('save keeps explicitly accepted AI locations and unlocks navigation when th
   assert.equal(ended.saving, false);
   assert.deepEqual(reducer(ended, { type: 'title', value: 'Edited after save' }).selectedFolderIds, ['a']);
 });
+test('repeated suggestions replace automatic choices without accumulating stale destinations', () => {
+  const start = {
+    ...INITIAL_STATE,
+    title: 'Page',
+    folders: ['manual', 'saved', 'first', 'second'].map((id) => ({ id, title: id })),
+    selectedFolderIds: ['manual', 'saved'],
+    saved: true,
+  };
+  const suggest = (state: typeof start, ids: string[]) => reducer(state, {
+    type: 'suggest', title: state.title, revision: state.selectionRevision, ids,
+  });
+  const first = suggest(start, ['first', 'saved']);
+  const second = suggest(first, ['second', 'manual']);
+  assert.deepEqual(second.selectedFolderIds, ['manual', 'saved', 'second']);
+  assert.deepEqual(second.autoSelectedFolderIds, ['second']);
+  const empty = suggest(second, []);
+  assert.deepEqual(empty.selectedFolderIds, ['manual', 'saved']);
+  assert.deepEqual(empty.autoSelectedFolderIds, []);
+});
